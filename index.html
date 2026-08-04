@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>سامانه خدمات ثنا</title>
     <style>
-        /* تعریف فونت محلی */
+        /* تعریف فونت محلی با پشتیبانی از حروف کوچک و بزرگ اسم فایل */
         @font-face {
             font-family: 'CustomFont';
-            src: url('Font.ttf') format('truetype');
+            src: url('font.ttf') format('truetype'),
+                 url('Font.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
             font-display: swap;
@@ -27,13 +28,325 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'CustomFont', Tahoma, sans-serif;
+            font-family: 'CustomFont', Vazir, Tahoma, sans-serif;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
+            padding: 20px 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 10px;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* باکس جستجو */
+        .search-box {
+            margin-bottom: 25px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 15px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--secondary-color);
+        }
+
+        /* گرید خدمات */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .service-card {
+            background-color: var(--card-bg);
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-color: var(--secondary-color);
+        }
+
+        .service-card h3 {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .service-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* فرم ثبت سفارش */
+        .form-container {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .form-container h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--secondary-color);
+        }
+
+        button.btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+
+        button.btn-submit:hover {
+            background-color: var(--secondary-color);
+        }
+
+        #statusMessage {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .status-success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-error {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>درگاه ارائه خدمات ثنا</h1>
+        <p>خدمت مورد نظر خود را انتخاب کرده یا فرم زیر را تکمیل کنید</p>
+    </header>
+
+    <!-- جستجو -->
+    <div class="search-box">
+        <input type="text" id="searchInput" onkeyup="filterServices()" placeholder="جستجوی خدمت مورد نظر...">
+    </div>
+
+    <!-- گرید خدمات -->
+    <div class="services-grid" id="servicesGrid">
+        <div class="service-card" onclick="selectService('ثبت‌نام ابلاغ الکترونیک ثنا')">
+            <h3>ثبت‌نام ثنا</h3>
+            <p>ثبت‌نام اولیه و احراز هویت الکترونیک سامانه ثنا</p>
+        </div>
+        <div class="service-card" onclick="selectService('بازیابی رمز عبور ثنا')">
+            <h3>بازیابی رمز ثنا</h3>
+            <p>بازیابی شماره سریال و رمز عبور فراموش شده</p>
+        </div>
+        <div class="service-card" onclick="selectService('مشاهده ابلاغیه قضایی')">
+            <h3>مشاهده ابلاغیه</h3>
+            <p>بررسی و دریافت ابلاغیه‌های جدید و قدیمی</p>
+        </div>
+        <div class="service-card" onclick="selectService('تغییر اطلاعات حساب ثنا')">
+            <h3>ویرایش اطلاعات</h3>
+            <p>تغییر شماره همراه، آدرس و اطلاعات کاربری</p>
+        </div>
+    </div>
+
+    <!-- فرم درخواست -->
+    <div class="form-container">
+        <h2>ثبت درخواست خدمت</h2>
+        <form id="orderForm" onsubmit="submitOrder(event)">
+            <div class="form-group">
+                <label for="fullName">نام و نام خانوادگی:</label>
+                <input type="text" id="fullName" required placeholder="مثال: علی محمدی">
+            </div>
+
+            <div class="form-group">
+                <label for="phoneNumber">شماره همراه:</label>
+                <input type="tel" id="phoneNumber" required placeholder="09123456789">
+            </div>
+
+            <div class="form-group">
+                <label for="serviceType">نوع خدمت درخواست شده:</label>
+                <select id="serviceType" required>
+                    <option value="">انتخاب کنید...</option>
+                    <option value="ثبت‌نام ابلاغ الکترونیک ثنا">ثبت‌نام ابلاغ الکترونیک ثنا</option>
+                    <option value="بازیابی رمز عبور ثنا">بازیابی رمز عبور ثنا</option>
+                    <option value="مشاهده ابلاغیه قضایی">مشاهده ابلاغیه قضایی</option>
+                    <option value="تغییر اطلاعات حساب ثنا">تغییر اطلاعات حساب ثنا</option>
+                    <option value="سایر موارد">سایر موارد</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">توضیحات تکمیلی (اختیاری):</label>
+                <textarea id="description" rows="3" placeholder="در صورت نیاز توضیحات بیشتری بنویسید..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">ارسال درخواست</button>
+        </form>
+        <div id="statusMessage"></div>
+    </div>
+</div>
+
+<script>
+    const BALE_BOT_TOKEN = '877619133:9LBldbNTxSFZ9jfwKSVtC-5Tb0CX3yNkJL4';
+    const BALE_CHAT_ID = '5040875422';
+
+    function filterServices() {
+        const input = document.getElementById('searchInput').value.toLowerCase();
+        const cards = document.getElementsByClassName('service-card');
+
+        for (let card of cards) {
+            const title = card.getElementsByTagName('h3')[0].innerText.toLowerCase();
+            const desc = card.getElementsByTagName('p')[0].innerText.toLowerCase();
+            
+            if (title.includes(input) || desc.includes(input)) {
+                card.style.display = "";
+            } else {
+                card.style.display = "none";
+            }
+        }
+    }
+
+    function selectService(serviceName) {
+        const selectElement = document.getElementById('serviceType');
+        selectElement.value = serviceName;
+        document.querySelector('.form-container').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function submitOrder(event) {
+        event.preventDefault();
+
+        const submitBtn = document.getElementById('submitBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        
+        const fullName = document.getElementById('fullName').value;
+        const phoneNumber = document.getElementById('phoneNumber').value;
+        const serviceType = document.getElementById('serviceType').value;
+        const description = document.getElementById('description').value || 'ندارد';
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'درحال ارسال...';
+        statusMessage.style.display = 'none';
+
+        const messageText = `📥 *درخواست جدید ثبت شد*\n\n` +
+            `👤 *نام:* ${fullName}\n` +
+            `📞 *شماره تماس:* ${phoneNumber}\n` +
+            `🛠 *خدمت:* ${serviceType}\n` +
+            `📝 *توضیحات:* ${description}`;
+
+        const apiUrl = `https://tapi.bale.ai/bot${BALE_BOT_TOKEN}/sendMessage`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    chat_id: BALE_CHAT_ID,
+                    text: messageText,
+                    parse_mode: 'Markdown'
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.ok) {
+                statusMessage.className = 'status-success';
+                statusMessage.innerText = 'درخواست شما با موفقیت ثبت شد. به‌زودی با شما تماس خواهیم گرفت.';
+                document.getElementById('orderForm').reset();
+            } else {
+                throw new Error(result.description || 'خطا در ارسال پیام');
+            }
+        } catch (error) {
+            statusMessage.className = 'status-error';
+            statusMessage.innerText = 'خطا در ثبت درخواست. لطفاً مجدداً تلاش کنید.';
+            console.error('Bale API Error:', error);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'ارسال درخواست';
+            statusMessage.style.display = 'block';
+        }
+    }
+</script>
+
+</body>
+</html>
             padding: 20px;
         }
 
