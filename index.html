@@ -130,7 +130,7 @@
     const BALE_BOT_TOKEN = "877619133:9LBldbNTxSFZ9jfwKSVtC-5Tb0CX3yNkJL4";
     const BALE_CHAT_ID = "5040875422";
     
-    // کلید اختصاصی Google Gemini
+    // کلید API گوگل
     const GEMINI_API_KEY = "AQ.Ab8RN6JEv4MZyzkkvNwnaQyzxomkfOjPhJuJ0xhMGG2RNa-a3g";
 
     let services = [];
@@ -326,7 +326,7 @@
       if (e.key === 'Enter') sendAiMessage();
     }
 
-    // بخش جدید متصل به API مستقیم Google Gemini
+    // بخش اصلاح‌شده اتصال به Gemini REST API
     async function sendAiMessage() {
       const input = document.getElementById('chatInput');
       const text = input.value.trim();
@@ -347,19 +347,22 @@
 
       sendBtn.disabled = true;
 
-      // ذخیره تاریخچه پیام‌ها بر اساس فرمت استاندارد Gemini API
+      // ساخت هیستوری بر اساس استاندارد Gemini
+      if (chatHistory.length === 0 && SYSTEM_PROMPT) {
+        chatHistory.push({ role: "user", parts: [{ text: "دستورالعمل سیستم: " + SYSTEM_PROMPT }] });
+        chatHistory.push({ role: "model", parts: [{ text: "متوجه شدم. من دستیار تخصصی کافی‌نت هستم." }] });
+      }
+
       chatHistory.push({ role: "user", parts: [{ text: text }] });
 
-      const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+      // آدرس اصلاح‌شده رسمی Gemini 1.5 Flash
+      const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
       try {
         const response = await fetch(geminiEndpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            systemInstruction: {
-              parts: [{ text: SYSTEM_PROMPT || "شما دستیار هوشمند کافی‌نت هستید." }]
-            },
             contents: chatHistory
           })
         });
@@ -368,7 +371,6 @@
           const data = await response.json();
           let aiResponse = data.candidates[0].content.parts[0].text;
           
-          // افزودن پاسخ مدل به تاریخچه
           chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
 
           let orderBtnHtml = "";
@@ -381,8 +383,9 @@
 
           loadingDiv.innerHTML = aiResponse + orderBtnHtml;
         } else {
-          console.error("Gemini Error Status:", response.status);
-          loadingDiv.innerText = "خطا در دریافت پاسخ از هوش مصنوعی. لطفاً دوباره تلاش کنید.";
+          const errData = await response.json();
+          console.error("Gemini Error Details:", errData);
+          loadingDiv.innerText = `خطا در دریافت پاسخ (${response.status}). لطفاً مطمئن شوید API Key معتبر است.`;
         }
       } catch (err) {
         console.error("Network Error:", err);
