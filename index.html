@@ -130,6 +130,371 @@
     const BALE_BOT_TOKEN = "877619133:9LBldbNTxSFZ9jfwKSVtC-5Tb0CX3yNkJL4";
     const BALE_CHAT_ID = "5040875422";
     
+    // کلید دریافت شده از Google AI Studio
+    const GEMINI_API_KEY = "AQ.Ab8RN6IDVJN_4JZmCYajqTXL5hcWpHFPMy3PflG6jhpk8Ne1jQ";
+
+    let services = [];
+    let currentCategory = 'همه';
+    let currentSelectedService = '';
+    let chatHistory = [];
+    let SYSTEM_PROMPT = "";
+
+    fetch('services.json')
+      .then(response => {
+        if (!response.ok) throw new Error("فایل JSON یافت نشد.");
+        return response.json();
+      })
+      .then(data => {
+        services = data;
+        renderCategories();
+        renderServices();
+        initSystemPrompt();
+      })
+      .catch(error => {
+        console.error('خطا در بارگذاری خدمات:', error);
+      });
+
+    function initSystemPrompt() {
+      const serviceTitles = services.map(s => `${s.id}. ${s.title}`).join('، ');
+      SYSTEM_PROMPT = `شما یک دستیار هوشمند و بسیار مودب برای یک کافی‌نت هستید.
+قوانین بسیار مهم که باید صراحتاً رعایت کنید:
+۱. فقط و فقط به سوالات مرتبط با خدمات کافی‌نت، امور اینترنتی، سامانه‌های دولتی (ثنا، سخا، مای‌مدیو، املاک، بیمه، مالیات، سجام و...) و وام‌ها/ثبت‌نام‌ها پاسخ دهید.
+۲. اگر کاربر سوالی نامربوط به حوزه کاری کافی‌نت پرسید، خیلی محترمانه پاسخ دهید: "عذرخواهی می‌کنم، من دستیار تخصصی خدمات کافی‌نت هستم و فقط می‌توانم در زمینه ثبت‌نام‌ها، سامانه‌ها و امور اینترنتی به شما پاسخ دهم."
+۳. لیست کامل خدمات کافی‌نت ما به همراه آیدی شامل این موارد است: ${serviceTitles}.
+۴. اگر کاربر درخواست انجام یکی از خدمات فوق را داشت، یا سوالش با یکی از خدمات مرتبط بود، او را تشویق کنید که سفارش دهد و در پاسخ خود حتما عبارت کلیدی [ORDER:کد_عنوان_خدمت] را قرار دهید تا سیستم دکمه فرم سفارش را برای او باز کند. مثلا اگر خواست ثبت نام ثنا انجام دهد بنویسید [ORDER:۱. ثبت نام ثنا].
+۵. پاسخ‌ها را کوتاه، مفید و دقیق بدهید.`;
+    }
+
+    function renderCategories() {
+      const categories = ['همه', ...new Set(services.map(s => s.cat))];
+      const container = document.getElementById('categoriesBar');
+      container.innerHTML = categories.map(cat => `
+        <button class="category-chip ${cat === currentCategory ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</button>
+      `).join('');
+    }
+
+    function filterCategory(cat) {
+      currentCategory = cat;
+      renderCategories();
+      renderServices();
+    }
+
+    function renderServices() {
+      const grid = document.getElementById('servicesGrid');
+      const filtered = currentCategory === 'همه' 
+        ? services 
+        : services.filter(s => s.cat === currentCategory);
+
+      grid.innerHTML = filtered.map(s => `
+        <div class="service-card" onclick="openServiceModal('${s.id}')">
+          <h3>${s.id}. ${s.title}</h3>
+          <span class="category-tag">${s.cat}</span>
+        </div>
+      `).join('');
+    }
+
+    function toggleMenu() {
+      document.getElementById('navMenu').classList.toggle('active');
+      document.getElementById('overlay').classList.toggle('active');
+    }
+
+    function openServiceModal(serviceId) {
+      const item = services.find(s => s.id == serviceId);
+      if (!item) return;
+
+      currentSelectedService = `${item.id}. ${item.title}`;
+      document.getElementById('modalTitle').innerText = `${item.id}. ${item.title}`;
+      document.getElementById('modalDesc').innerText = item.desc || 'توضیحی ثبت نشده است.';
+      document.getElementById('modalDocs').innerText = item.docs || 'مدارک خاصی ذکر نشده است.';
+      document.getElementById('modalCost').innerText = item.cost || 'طبق تعرفه';
+      document.getElementById('modalTime').innerText = item.time || 'سریع';
+      document.getElementById('serviceModal').style.display = 'flex';
+    }
+
+    function openOrderModal(serviceName) {
+      if(serviceName) currentSelectedService = serviceName;
+      closeModal('serviceModal');
+      closeModal('aiModal');
+      document.getElementById('orderServiceTitle').innerText = currentSelectedService;
+      document.getElementById('orderModal').style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+    }
+
+    function liveSearch() {
+      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+      const resultsContainer = document.getElementById('searchResults');
+      
+      if (query === '') {
+        resultsContainer.style.display = 'none';
+        resultsContainer.innerHTML = '';
+        return;
+      }
+
+      const filtered = services.filter(s => {
+        const title = String(s.title || '').toLowerCase();
+        const cat = String(s.cat || '').toLowerCase();
+        const id = String(s.id || '').toLowerCase();
+        
+        return title.includes(query) || cat.includes(query) || id.includes(query);
+      });
+
+      if (filtered.length > 0) {
+        resultsContainer.innerHTML = filtered.map(s => `
+          <li onclick="selectSearchResult('${s.id}')">
+            <strong>${s.id}. ${s.title}</strong> <span style="font-size:0.75rem; color:#64748b;">(${s.cat || 'عمومی'})</span>
+          </li>
+        `).join('');
+        resultsContainer.style.display = 'block';
+      } else {
+        resultsContainer.innerHTML = '<li style="color:#94a3b8; text-align:center;">موردی یافت نشد</li>';
+        resultsContainer.style.display = 'block';
+      }
+    }
+
+    function selectSearchResult(serviceId) {
+      document.getElementById('searchResults').style.display = 'none';
+      document.getElementById('searchInput').value = '';
+      openServiceModal(serviceId);
+    }
+
+    async function submitOrder(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.innerText = 'در حال ارسال...';
+      submitBtn.disabled = true;
+
+      const name = document.getElementById('custName').value;
+      const phone = document.getElementById('custPhone').value;
+      const notes = document.getElementById('custNotes').value || 'ندارد';
+
+      const tg = window.Telegram?.WebApp;
+      let platform = "وب‌سایت مستقیم";
+      let userInfo = "";
+
+      if (tg?.initDataUnsafe?.user) {
+        platform = "ربات تلگرام";
+        const u = tg.initDataUnsafe.user;
+        userInfo = `\n👤 آیدی تلگرام: @${u.username || 'ندارد'} (ID: ${u.id})`;
+      }
+
+      const messageText = `📦 *سفارش جدید دریافت شد!*
+────────────────
+🛠 *خدمت:* ${currentSelectedService}
+👤 *نام مشتری:* ${name}
+📞 *شماره تماس:* \`${phone}\`
+📝 *توضیحات:* ${notes}
+🌐 *منبع سفارش:* ${platform}${userInfo}
+⏱ *زمان ثبت:* ${new Date().toLocaleTimeString('fa-IR')}`;
+
+      try {
+        const response = await fetch(`https://tapi.bale.ai/bot${BALE_BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: BALE_CHAT_ID,
+            text: messageText,
+            parse_mode: 'Markdown'
+          })
+        });
+
+        if (response.ok) {
+          alert('✅ سفارش شما با موفقیت ثبت شد. به‌زودی با شما تماس می‌گیریم.');
+          document.getElementById('custName').value = '';
+          document.getElementById('custPhone').value = '';
+          document.getElementById('custNotes').value = '';
+          closeModal('orderModal');
+          if (tg?.close) tg.close();
+        } else {
+          alert('خطا در ثبت سفارش. لطفاً بررسی کنید ربات در بله فعال باشد.');
+        }
+      } catch (err) {
+        alert('خطا در اتصال به شبکه.');
+      } finally {
+        submitBtn.innerText = 'ارسال سفارش';
+        submitBtn.disabled = false;
+      }
+    }
+
+    function openAiChat() {
+      document.getElementById('aiModal').style.display = 'flex';
+    }
+
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') sendAiMessage();
+    }
+
+    // ارسال درخواست به Gemini همراه با هدر x-goog-api-key برای پشتیبانی از کلیدهای جدید AQ
+    async function sendAiMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const chatBox = document.getElementById('chatBox');
+      const sendBtn = document.getElementById('aiSendBtn');
+
+      chatBox.innerHTML += `<div class="chat-msg user">${text}</div>`;
+      input.value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      const loadingDiv = document.createElement('div');
+      loadingDiv.className = 'chat-msg ai';
+      loadingDiv.innerText = 'در حال بررسی سوال...';
+      chatBox.appendChild(loadingDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      sendBtn.disabled = true;
+
+      if (chatHistory.length === 0 && SYSTEM_PROMPT) {
+        chatHistory.push({ role: "user", parts: [{ text: "دستورالعمل سیستم: " + SYSTEM_PROMPT }] });
+        chatHistory.push({ role: "model", parts: [{ text: "متوجه شدم. من دستیار تخصصی کافی‌نت هستم." }] });
+      }
+
+      chatHistory.push({ role: "user", parts: [{ text: text }] });
+
+      const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+      try {
+        const response = await fetch(geminiEndpoint, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "x-goog-api-key": GEMINI_API_KEY
+          },
+          body: JSON.stringify({
+            contents: chatHistory
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          let aiResponse = data.candidates[0].content.parts[0].text;
+          
+          chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
+
+          let orderBtnHtml = "";
+          const orderMatch = aiResponse.match(/\[ORDER:(.*?)\]/);
+          if (orderMatch) {
+            const targetService = orderMatch[1];
+            aiResponse = aiResponse.replace(/\[ORDER:.*?\]/g, "");
+            orderBtnHtml = `<br><button class="inline-order-btn" onclick="openOrderModal('${targetService}')">📝 ثبت سفارش ${targetService}</button>`;
+          }
+
+          loadingDiv.innerHTML = aiResponse + orderBtnHtml;
+        } else {
+          const errData = await response.json();
+          console.error("Gemini Error Details:", errData);
+          loadingDiv.innerText = `خطا در دریافت پاسخ (${response.status}). لطفاً اتصال اینترنت/تحریم‌شکن را بررسی کنید.`;
+        }
+      } catch (err) {
+        console.error("Network Error:", err);
+        loadingDiv.innerText = "خطا در برقراری ارتباط با شبکه.";
+      } finally {
+        sendBtn.disabled = false;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+  </script>
+</body>
+</html>
+  </main>
+
+  <!-- دکمه ربات هوش مصنوعی -->
+  <div class="ai-bot-btn" onclick="openAiChat()" title="گفتگو با هوش مصنوعی">
+    <svg viewBox="0 0 24 24">
+      <path d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7H14A7,7 0 0,1 21,14H22A1,1 0 0,1 23,15V18A1,1 0 0,1 22,19H21V20A2,2 0 0,1 19,22H5A2,2 0 0,1 3,20V19H2A1,1 0 0,1 1,18V15A1,1 0 0,1 2,14H3A7,7 0 0,1 10,7H11V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2M7.5,13A1.5,1.5 0 0,0 6,14.5A1.5,1.5 0 0,0 7.5,16A1.5,1.5 0 0,0 9,14.5A1.5,1.5 0 0,0 7.5,13M16.5,13A1.5,1.5 0 0,0 15,14.5A1.5,1.5 0 0,0 16.5,16A1.5,1.5 0 0,0 18,14.5A1.5,1.5 0 0,0 16.5,13M12,17.5C10.33,17.5 9,18.39 9,19.5H15C15,18.39 13.67,17.5 12,17.5Z"/>
+    </svg>
+  </div>
+
+  <!-- کادر جستجو -->
+  <footer>
+    <div class="search-container">
+      <ul class="search-results-list" id="searchResults"></ul>
+      <div class="search-box">
+        <input type="text" id="searchInput" onkeyup="liveSearch()" placeholder="جستجوی تمامی خدمات یا کد خدمت...">
+      </div>
+    </div>
+  </footer>
+
+  <!-- مدال جزئیات خدمت -->
+  <div class="modal" id="serviceModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">عنوان خدمت</h2>
+        <span style="cursor:pointer;" onclick="closeModal('serviceModal')">✕</span>
+      </div>
+      <div class="modal-body">
+        <p id="modalDesc">توضیحات خدمت...</p>
+        
+        <div class="info-badge" style="background-color: #fef3c7; color: #92400e;">
+          <span>📋 مدارک مورد نیاز:</span>
+          <span id="modalDocs" style="font-weight: bold;">...</span>
+        </div>
+
+        <div class="info-badge">
+          <span>هزینه انجام:</span>
+          <span id="modalCost" style="color: #059669;">طبق تعرفه</span>
+        </div>
+        <div class="info-badge">
+          <span>زمان احتمالی:</span>
+          <span id="modalTime" style="color: #d97706;">سریع</span>
+        </div>
+        <div class="btn-group">
+          <button class="order-btn" onclick="openOrderModal()">ثبت سفارش</button>
+          <button class="close-modal-btn" onclick="closeModal('serviceModal')">بستن</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- مدال ثبت سفارش -->
+  <div class="modal" id="orderModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>ثبت سفارش: <span id="orderServiceTitle" style="color: var(--secondary-color);"></span></h2>
+        <span style="cursor:pointer;" onclick="closeModal('orderModal')">✕</span>
+      </div>
+      <form onsubmit="submitOrder(event)">
+        <div class="form-group">
+          <label>نام و نام خانوادگی:</label>
+          <input type="text" id="custName" required placeholder="مثال: علی محمدی">
+        </div>
+        <div class="form-group">
+          <label>شماره تماس (موبایل):</label>
+          <input type="tel" id="custPhone" required placeholder="09123456789">
+        </div>
+        <div class="form-group">
+          <label>توضیحات تکمیلی (اختیاری):</label>
+          <textarea id="custNotes" rows="3" placeholder="اگر توضیحی دارید بنویسید..."></textarea>
+        </div>
+        <button type="submit" class="submit-order-btn" id="submitBtn">ارسال سفارش</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- مدال گفتگو با هوش مصنوعی -->
+  <div class="modal" id="aiModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>🤖 دستیار هوشمند کافی‌نت</h2>
+        <span style="cursor:pointer;" onclick="closeModal('aiModal')">✕</span>
+      </div>
+      <div class="chat-box" id="chatBox">
+        <div class="chat-msg ai">سلام! من دستیار هوشمند کافی‌نت هستم. چطور می‌توانم در زمینه امور اینترنتی، ثبت‌نام‌ها یا خدمات بانکی و قضایی به شما کمک کنم؟</div>
+      </div>
+      <div class="chat-input-area">
+        <input type="text" id="chatInput" placeholder="سوال خود را بنویسید..." onkeypress="handleKeyPress(event)">
+        <button class="chat-send-btn" onclick="sendAiMessage()" id="aiSendBtn">ارسال</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BALE_BOT_TOKEN = "877619133:9LBldbNTxSFZ9jfwKSVtC-5Tb0CX3yNkJL4";
+    const BALE_CHAT_ID = "5040875422";
+    
     // کلید API گوگل
     const GEMINI_API_KEY = "AQ.Ab8RN6JEv4MZyzkkvNwnaQyzxomkfOjPhJuJ0xhMGG2RNa-a3g";
 
