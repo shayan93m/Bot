@@ -84,7 +84,7 @@
     </div>
   </div>
 
-  <!-- مدال ثبت سفارش (هوشمند بر اساس مدارک) -->
+  <!-- مدال ثبت سفارش با ساخت پویای کادرهای ورودی -->
   <div class="modal" id="orderModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -92,26 +92,19 @@
         <span style="cursor:pointer;" onclick="closeModal('orderModal')">✕</span>
       </div>
       <form onsubmit="submitOrder(event)">
+        <!-- این فیلد همیشه ثابت است -->
         <div class="form-group">
           <label>نام و نام خانوادگی:</label>
           <input type="text" id="custName" required placeholder="مثال: علی محمدی">
         </div>
-        <div class="form-group">
-          <label>شماره تماس (موبایل):</label>
-          <input type="tel" id="custPhone" required placeholder="09123456789">
-        </div>
 
-        <!-- بخش پویا جهت نمایش مدارک مورد نیاز خدمت انتخاب‌شده -->
-        <div class="form-group" style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px dashed #cbd5e1;">
-          <label style="font-weight: bold; color: #1e293b;">📋 مدارک لازم برای این خدمت:</label>
-          <div id="requiredDocsContainer" style="margin-top: 8px; font-size: 0.9rem; color: #475569;">
-            <!-- چک‌باکس‌ها یا راهنمای مدارک اینجا به طور خودکار تزریق می‌شوند -->
-          </div>
-        </div>
+        <!-- کادرهای ورودی پویا که بر اساس مدارک ساخته می‌شوند -->
+        <div id="dynamicInputsContainer"></div>
 
+        <!-- فیلد توضیحات همیشه ثابت -->
         <div class="form-group">
           <label>توضیحات تکمیلی (اختیاری):</label>
-          <textarea id="custNotes" rows="3" placeholder="اگر توضیحی یا کدملی و... دارید بنویسید..."></textarea>
+          <textarea id="custNotes" rows="2" placeholder="اگر توضیح اضافی دارید بنویسید..."></textarea>
         </div>
         <button type="submit" class="submit-order-btn" id="submitBtn">ارسال سفارش</button>
       </form>
@@ -143,7 +136,7 @@
 
     let services = [];
     let currentCategory = 'همه';
-    let currentSelectedServiceObj = null; // ذخیره شیء کامل خدمت انتخابی
+    let currentSelectedServiceObj = null;
     let chatHistory = [];
     let SYSTEM_PROMPT = "";
 
@@ -219,10 +212,9 @@
       document.getElementById('serviceModal').style.display = 'flex';
     }
 
-    // باز کردن مدال سفارش و ساخت پویای فیلد مدارک
+    // الگوریتم ساخت فیلدهای ورودی واقعی بر اساس متن مدارک
     function openOrderModal(serviceIdentifier) {
       if (serviceIdentifier) {
-        // پیدا کردن خدمت بر اساس آی‌دی یا اسم
         const found = services.find(s => `${s.id}. ${s.title}` === serviceIdentifier || s.id == serviceIdentifier || s.title == serviceIdentifier);
         if (found) currentSelectedServiceObj = found;
       }
@@ -236,25 +228,50 @@
 
       document.getElementById('orderServiceTitle').innerText = titleText;
 
-      // ساخت پویای چک‌باکس مدارک براساس JSON
-      const docsContainer = document.getElementById('requiredDocsContainer');
-      const rawDocs = currentSelectedServiceObj?.docs || 'مدارک خاصی ذکر نشده است.';
-      
-      // تفکیک مدارک با ویرگول یا خط تیره
-      const docList = rawDocs.split(/،|-|\n/).map(d => d.trim()).filter(d => d.length > 0);
+      const container = document.getElementById('dynamicInputsContainer');
+      container.innerHTML = '';
 
-      if (docList.length > 0 && rawDocs !== 'مدارک خاصی ذکر نشده است.') {
-        docsContainer.innerHTML = `
-          <p style="margin-bottom:8px; font-weight:bold; color:#0369a1;">لطفاً مدارکی که همراه دارید یا آماده کرده‌اید را علامت بزنید:</p>
-          ` + docList.map((doc, idx) => `
-            <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; cursor: pointer;">
-              <input type="checkbox" class="doc-checkbox" value="${doc}" checked style="accent-color: #2563eb; width: 16px; height: 16px;">
-              <span>${doc}</span>
-            </label>
-          `).join('');
-      } else {
-        docsContainer.innerHTML = `<span style="color:#64748b;">${rawDocs}</span>`;
+      const rawDocs = currentSelectedServiceObj?.docs || '';
+      
+      // تفکیک موارد از جداکننده‌های رایج
+      let docItems = rawDocs.split(/،|-|\n/).map(d => d.trim()).filter(d => d.length > 0);
+
+      // اگر هیچ مدرکی ثبت نشده بود، حداقل شماره تماس را بساز
+      if (docItems.length === 0) {
+        docItems = ['شماره تماس (موبایل)'];
       }
+
+      // ساخت پویای Inputs
+      docItems.forEach((doc, index) => {
+        const fieldGroup = document.createElement('div');
+        fieldGroup.className = 'form-group';
+        
+        const label = document.createElement('label');
+        label.innerText = doc + ':';
+
+        // تشخیص نوع Input بر اساس کلمات کلیدی
+        let input;
+        if (doc.includes('آدرس') || doc.includes('توضیحات')) {
+          input = document.createElement('textarea');
+          input.rows = 2;
+        } else {
+          input = document.createElement('input');
+          if (doc.includes('تماس') || doc.includes('موبایل') || doc.includes('تلفن') || doc.includes('کد ملی') || doc.includes('پستی') || doc.includes('حساب') || doc.includes('شبا')) {
+            input.type = 'tel';
+          } else {
+            input.type = 'text';
+          }
+        }
+
+        input.className = 'dynamic-doc-input';
+        input.dataset.label = doc;
+        input.required = true; // اجباری کردن تکمیل مدارک
+        input.placeholder = `وارد کنید...`;
+
+        fieldGroup.appendChild(label);
+        fieldGroup.appendChild(input);
+        container.appendChild(fieldGroup);
+      });
 
       document.getElementById('orderModal').style.display = 'flex';
     }
@@ -307,12 +324,17 @@
       submitBtn.disabled = true;
 
       const name = document.getElementById('custName').value;
-      const phone = document.getElementById('custPhone').value;
       const notes = document.getElementById('custNotes').value || 'ندارد';
 
-      // جمع‌آوری مدارک علامت‌زده‌شده توسط کاربر
-      const checkedDocs = Array.from(document.querySelectorAll('.doc-checkbox:checked')).map(cb => cb.value);
-      const docsSummary = checkedDocs.length > 0 ? checkedDocs.join('، ') : 'موردی انتخاب نشد یا نیاز نبود';
+      // جمع‌آوری اطلاعات تمام فیلدهای پویای مدارک
+      const dynamicInputs = document.querySelectorAll('.dynamic-doc-input');
+      let collectedDocsData = "";
+
+      dynamicInputs.forEach(input => {
+        const labelText = input.dataset.label;
+        const val = input.value.trim() || 'وارد نشده';
+        collectedDocsData += `\n📌 *${labelText}:* \`${val}\``;
+      });
 
       const serviceTitle = currentSelectedServiceObj 
         ? `${currentSelectedServiceObj.id}. ${currentSelectedServiceObj.title}` 
@@ -331,10 +353,8 @@
       const messageText = `📦 *سفارش جدید دریافت شد!*
 ────────────────
 🛠 *خدمت:* ${serviceTitle}
-👤 *نام مشتری:* ${name}
-📞 *شماره تماس:* \`${phone}\`
-📋 *مدارک همراه مشتری:* ${docsSummary}
-📝 *توضیحات:* ${notes}
+👤 *نام مشتری:* ${name}${collectedDocsData}
+📝 *توضیحات تکمیلی:* ${notes}
 🌐 *منبع سفارش:* ${platform}${userInfo}
 ⏱ *زمان ثبت:* ${new Date().toLocaleTimeString('fa-IR')}`;
 
@@ -352,7 +372,6 @@
         if (response.ok) {
           alert('✅ سفارش شما با موفقیت ثبت شد. به‌زودی با شما تماس می‌گیریم.');
           document.getElementById('custName').value = '';
-          document.getElementById('custPhone').value = '';
           document.getElementById('custNotes').value = '';
           closeModal('orderModal');
           if (tg?.close) tg.close();
@@ -446,4 +465,4 @@
     }
   </script>
 </body>
-</html>
+  </html>
