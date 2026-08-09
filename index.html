@@ -452,8 +452,9 @@
         closeModal('orderModal');
 
       } catch (err) {
-        console.error(err);
-        alert('خطا در ارسال سفارش. لطفاً اتصال اینترنت را بررسی کنید یا دوباره تلاش کنید.');
+        console.error('Bale Error:', err);
+        const msg = (err && err.message) ? err.message : String(err);
+        alert('خطا در ارسال سفارش:\n' + msg + '\n\nاگر مشکل CORS است، باید از طریق سرور میانی ارسال شود.');
       } finally {
         submitBtn.innerText = 'ارسال سفارش';
         submitBtn.disabled = false;
