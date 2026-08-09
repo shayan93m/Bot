@@ -6,7 +6,6 @@
   <title>سامانه هوشمند کافی‌نت من</title>
  
   <link rel="stylesheet" href="style.css">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="nav.js"></script>
 </head>
 <body>
@@ -88,6 +87,10 @@
           <label>توضیحات تکمیلی (اختیاری):</label>
           <textarea id="custNotes" rows="2" placeholder="اگر توضیح اضافی دارید بنویسید..."></textarea>
         </div>
+        <div class="form-group" id="captchaBox">
+          <label>کد امنیتی: <span id="captchaQuestion" style="color:#1e3a8a; font-weight:800;"></span></label>
+          <input type="number" id="captchaAnswer" required placeholder="حاصل جمع را وارد کنید" inputmode="numeric">
+        </div>
         <button type="submit" class="submit-order-btn" id="submitBtn">ارسال سفارش</button>
       </form>
     </div>
@@ -120,6 +123,17 @@
     let currentSelectedServiceObj = null;
     let chatHistory = [];
     let SYSTEM_PROMPT = "";
+    let savedScrollY = 0;
+    let captchaResult = 0;
+
+    function lockBodyScroll() {
+      savedScrollY = window.scrollY;
+      document.body.style.top = `-${savedScrollY}px`;
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.classList.add('modal-open');
+    }
+
 
     fetch('services.json')
       .then(response => {
@@ -192,6 +206,7 @@
       document.getElementById('modalSystemTime').innerText = item.systemTime || item.system_time || 'مشخص‌نشده';
      
       document.getElementById('serviceModal').style.display = 'flex';
+      lockBodyScroll();
     }
 
     function openOrderModal(serviceIdentifier) {
@@ -208,31 +223,47 @@
       const container = document.getElementById('dynamicInputsContainer');
       container.innerHTML = '';
 
-      // همیشه فیلد تلفن همراه را اضافه کن (مثل نام و نام خانوادگی)
-      const phoneGroup = document.createElement('div');
-      phoneGroup.className = 'form-group';
-      phoneGroup.innerHTML = `
-        <label>تلفن همراه:</label>
-        <input type="tel" class="dynamic-doc-input" data-label="تلفن همراه" required placeholder="مثال: ۰۹۱۲۳۴۵۶۷۸۹">
-      `;
-      container.appendChild(phoneGroup);
-
       const rawDocs = currentSelectedServiceObj?.docs || '';
      
       let docItems = rawDocs.split(/،|-|\n/).map(d => d.trim()).filter(d => d.length > 0);
 
-      // تبدیل "سیم کارت بنام متقاضی" به "تلفن همراه بنام متقاضی"
+      // نرمال‌سازی عنوان‌های مربوط به تلفن بنام متقاضی / شخص متقاضی
       docItems = docItems.map(d => {
-        if (d.includes('سیم کارت') && d.includes('بنام متقاضی')) {
+        const lower = d.replace(/ي/g, 'ی').replace(/ك/g, 'ک');
+        if (
+          (lower.includes('سیم کارت') || lower.includes('تلفن') || lower.includes('موبایل') || lower.includes('شماره')) &&
+          (lower.includes('بنام متقاضی') || lower.includes('به نام متقاضی') || lower.includes('بنام شخص متقاضی') || lower.includes('به نام شخص متقاضی'))
+        ) {
           return 'تلفن همراه بنام متقاضی';
         }
-        // جلوگیری از تکرار فیلد تلفن/موبایل چون قبلا اضافه کردیم
-        if (d.includes('تماس') || d.includes('موبایل') || d.includes('تلفن') || d.includes('شماره تماس')) {
-          return null;
-        }
         return d;
-      }).filter(Boolean);
+      });
 
+      // آیا فیلد تلفن مخصوص متقاضی وجود دارد؟
+      const hasApplicantPhone = docItems.some(d => d === 'تلفن همراه بنام متقاضی');
+
+      // حذف بقیه فیلدهای تلفن/موبایل معمولی برای جلوگیری از تکرار
+      docItems = docItems.filter(d => {
+        if (d === 'تلفن همراه بنام متقاضی') return true;
+        if (d.includes('تماس') || d.includes('موبایل') || d.includes('تلفن') || d.includes('شماره تماس') || d.includes('شماره همراه')) {
+          return false;
+        }
+        return true;
+      });
+
+      // ----- ترتیب فیلدها -----
+      // 1. تلفن همراه (فقط اگر نسخه بنام متقاضی وجود نداشت)
+      if (!hasApplicantPhone) {
+        const phoneGroup = document.createElement('div');
+        phoneGroup.className = 'form-group';
+        phoneGroup.innerHTML = `
+          <label>تلفن همراه:</label>
+          <input type="tel" class="dynamic-doc-input" data-label="تلفن همراه" required placeholder="مثال: ۰۹۱۲۳۴۵۶۷۸۹">
+        `;
+        container.appendChild(phoneGroup);
+      }
+
+      // 2. بقیه مدارک (از جمله تلفن همراه بنام متقاضی اگر وجود داشت)
       docItems.forEach((doc) => {
         const fieldGroup = document.createElement('div');
         fieldGroup.className = 'form-group';
@@ -259,11 +290,47 @@
         fieldGroup.appendChild(input);
         container.appendChild(fieldGroup);
       });
+
+      // 3. آپلود چند فایل (قبل از توضیحات تکمیلی)
+      const fileGroup = document.createElement('div');
+      fileGroup.className = 'form-group';
+      fileGroup.innerHTML = `
+        <label>پیوست فایل (اختیاری - می‌توانید چند فایل انتخاب کنید):</label>
+        <input type="file" id="orderFiles" class="dynamic-doc-input" data-label="فایل‌های پیوست" multiple accept="image/*,.heic,.heif,.jpg,.jpeg,.png,.gif,.webp,.bmp,.pdf,.doc,.docx,.zip,.rar" style="padding:10px; border:1px dashed #94a3b8; border-radius:8px; background:#f8fafc;">
+        <small style="display:block; margin-top:6px; color:#64748b; font-size:0.78rem;">فرمت‌های مجاز: JPG, PNG, HEIC , PDF، Word، ZIP</small>
+      `;
+      container.appendChild(fileGroup);
+
       document.getElementById('orderModal').style.display = 'flex';
+      lockBodyScroll();
+      generateCaptcha();
+    }
+
+    
+    function generateCaptcha() {
+      const a = Math.floor(Math.random() * 8) + 2; // 2-9
+      const b = Math.floor(Math.random() * 8) + 2;
+      captchaResult = a + b;
+      const el = document.getElementById('captchaQuestion');
+      if (el) el.innerText = `${a} + ${b} = ؟`;
+      const input = document.getElementById('captchaAnswer');
+      if (input) input.value = '';
     }
 
     function closeModal(modalId) {
       document.getElementById(modalId).style.display = 'none';
+      const anyOpen = ['serviceModal', 'orderModal', 'aiModal'].some(id => {
+        const el = document.getElementById(id);
+        return el && el.style.display === 'flex';
+      });
+      if (!anyOpen) {
+        // آزاد کردن اسکرول بدون پرش
+        document.body.classList.remove('modal-open');
+        document.body.style.top = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+        window.scrollTo(0, savedScrollY);
+      }
     }
 
     function liveSearch() {
@@ -310,38 +377,44 @@
 
     async function submitOrder(e) {
       e.preventDefault();
+
+      // بررسی کپچا
+      const userCaptcha = parseInt(document.getElementById('captchaAnswer').value, 10);
+      if (userCaptcha !== captchaResult) {
+        alert('کد امنیتی اشتباه است. لطفاً دوباره محاسبه کنید.');
+        generateCaptcha();
+        return;
+      }
+
       const submitBtn = document.getElementById('submitBtn');
       submitBtn.innerText = 'در حال ارسال...';
       submitBtn.disabled = true;
+
       const name = document.getElementById('custName').value;
       const notes = document.getElementById('custNotes').value || 'ندارد';
-      const dynamicInputs = document.querySelectorAll('.dynamic-doc-input');
+      const dynamicInputs = document.querySelectorAll('.dynamic-doc-input:not([type="file"])');
       let collectedDocsData = "";
       dynamicInputs.forEach(input => {
         const labelText = input.dataset.label;
         const val = input.value.trim() || 'وارد نشده';
         collectedDocsData += `\n📌 *${labelText}:* \`${val}\``;
       });
+
       const serviceTitle = currentSelectedServiceObj
         ? `${currentSelectedServiceObj.id}. ${currentSelectedServiceObj.title}`
         : 'مشخص‌نشده';
-      const tg = window.Telegram?.WebApp;
-      let platform = "وب‌سایت مستقیم";
-      let userInfo = "";
-      if (tg?.initDataUnsafe?.user) {
-        platform = "ربات تلگرام";
-        const u = tg.initDataUnsafe.user;
-        userInfo = `\n👤 آیدی تلگرام: @${u.username || 'ندارد'} (ID: ${u.id})`;
-      }
+
       const messageText = `📦 *سفارش جدید دریافت شد!*
 ────────────────
 🛠 *خدمت:* ${serviceTitle}
 👤 *نام مشتری:* ${name}${collectedDocsData}
 📝 *توضیحات تکمیلی:* ${notes}
-🌐 *منبع سفارش:* ${platform}${userInfo}
+🌐 *منبع سفارش:* وب‌سایت
 ⏱ *زمان ثبت:* ${new Date().toLocaleTimeString('fa-IR')}`;
+
       try {
-        const response = await fetch(`https://tapi.bale.ai/bot${BALE_BOT_TOKEN}/sendMessage`, {
+        // ۱. ارسال پیام متنی
+        const textRes = await fetch(`https://tapi.bale.ai/bot${BALE_BOT_TOKEN}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -350,17 +423,37 @@
             parse_mode: 'Markdown'
           })
         });
-        if (response.ok) {
-          alert('✅ سفارش شما با موفقیت ثبت شد. به‌زودی با شما تماس می‌گیریم.');
-          document.getElementById('custName').value = '';
-          document.getElementById('custNotes').value = '';
-          closeModal('orderModal');
-          if (tg?.close) tg.close();
-        } else {
-          alert('خطا در ثبت سفارش. لطفاً بررسی کنید ربات در بله فعال باشد.');
+
+        if (!textRes.ok) {
+          throw new Error('خطا در ارسال پیام متنی');
         }
+
+        // ۲. ارسال فایل‌ها (اگر انتخاب شده باشند)
+        const fileInput = document.getElementById('orderFiles');
+        if (fileInput && fileInput.files && fileInput.files.length > 0) {
+          for (let i = 0; i < fileInput.files.length; i++) {
+            const file = fileInput.files[i];
+            const formData = new FormData();
+            formData.append('chat_id', BALE_CHAT_ID);
+            formData.append('document', file, file.name);
+            formData.append('caption', `📎 پیوست سفارش: ${serviceTitle} — ${name} (${i + 1}/${fileInput.files.length})`);
+
+            await fetch(`https://tapi.bale.ai/bot${BALE_BOT_TOKEN}/sendDocument`, {
+              method: 'POST',
+              body: formData
+            });
+          }
+        }
+
+        alert('✅ سفارش شما با موفقیت ثبت شد. به‌زودی با شما تماس می‌گیریم.');
+        document.getElementById('custName').value = '';
+        document.getElementById('custNotes').value = '';
+        if (fileInput) fileInput.value = '';
+        closeModal('orderModal');
+
       } catch (err) {
-        alert('خطا در اتصال به شبکه.');
+        console.error(err);
+        alert('خطا در ارسال سفارش. لطفاً اتصال اینترنت را بررسی کنید یا دوباره تلاش کنید.');
       } finally {
         submitBtn.innerText = 'ارسال سفارش';
         submitBtn.disabled = false;
@@ -369,6 +462,7 @@
 
     function openAiChat() {
       document.getElementById('aiModal').style.display = 'flex';
+      lockBodyScroll();
     }
 
     function handleKeyPress(e) {

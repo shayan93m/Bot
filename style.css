@@ -426,6 +426,15 @@ footer {
   max-height: 90vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden; /* مهم برای اسکرول داخلی */
+}
+
+.modal-content form {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* اسکرول نرم در iOS */
+  flex: 1;
+  min-height: 0; /* حیاتی برای flex + overflow */
+  padding-bottom: 10px;
 }
 
 @keyframes fadeIn {
@@ -449,7 +458,9 @@ footer {
 
 .modal-body {
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   flex-grow: 1;
+  min-height: 0;
 }
 
 .modal-body p {
@@ -605,4 +616,10 @@ footer {
   cursor: pointer;
   border: none;
   font-weight: bold;
+}
+
+
+/* جلوگیری از اسکرول صفحه وقتی مدال باز است */
+body.modal-open {
+  overflow: hidden;
 }
