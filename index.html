@@ -116,6 +116,7 @@
   <script>
     const BALE_BOT_TOKEN = "877619133:9LBldbNTxSFZ9jfwKSVtC-5Tb0CX3yNkJL4";
     const BALE_CHAT_ID = "5040875422";
+    const PROXY_URL = "https://bot.youcoweb.workers.dev";
    
     const GEMINI_API_KEY = "AQ.Ab8RN6IDVJN_4JZmCYajqTXL5hcWpHFPMy3PflG6jhpk8Ne1jQ";
     let services = [];
@@ -414,13 +415,11 @@
 
       try {
         // ۱. ارسال پیام متنی
-        const textRes = await fetch(`https://tapi.bale.ai/bot${BALE_BOT_TOKEN}/sendMessage`, {
+        const textRes = await fetch(PROXY_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            chat_id: BALE_CHAT_ID,
-            text: messageText,
-            parse_mode: 'Markdown'
+            text: messageText
           })
         });
 
@@ -438,7 +437,7 @@
             formData.append('document', file, file.name);
             formData.append('caption', `📎 پیوست سفارش: ${serviceTitle} — ${name} (${i + 1}/${fileInput.files.length})`);
 
-            await fetch(`https://tapi.bale.ai/bot${BALE_BOT_TOKEN}/sendDocument`, {
+            await fetch(PROXY_URL, {
               method: 'POST',
               body: formData
             });
