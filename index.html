@@ -7,48 +7,12 @@
  
   <link rel="stylesheet" href="style.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="nav.js"></script>
 </head>
 <body>
-  <!-- هدر -->
-  <header>
-    <div style="width: 30px;"></div>
-    <div class="logo-container">
-      <div class="logo">سامانه هوشمند کافی نت من</div>
-    </div>
-    <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
-  </header>
+  <!-- هدر و منو از nav.js لود می‌شود -->
 
-  <!-- منوی کشویی -->
-  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-  <nav class="nav-menu" id="navMenu">
-    <button class="close-btn" onclick="toggleMenu()">✕</button>
-
-    <ul class="nav-top">
-      <li><a href="news.html">خبرها</a></li>
-      <li><a href="about.html">درباره ما</a></li>
-      <li><a href="licenses.html">مجوزهای ما</a></li>
-      <li><a href="policy.html">خط مشی مشتریان</a></li>
-      <li><a href="rules.html">قوانین سایت</a></li>
-      <li><a href="contact.html">ارتباط با ما</a></li>
-    </ul>
-
-    <div class="nav-bottom">
-      <a href="login.html" class="nav-orders" style="background:#eff6ff; border-color:#bfdbfe; color:#1d4ed8;">
-        👤 ثبت نام / ورود
-      </a>
-      <a href="orders.html" class="nav-orders">📋 سفارشات من</a>
-
-      <div class="balance-box">
-        <div class="balance-label">موجودی حساب شما</div>
-        <div class="balance-amount">۵۰۰٬۰۰۰ تومان</div>
-        <button class="charge-btn" onclick="alert('به زودی امکان شارژ موجودی فعال می‌شود')">
-          ⚡ شارژ موجودی
-        </button>
-      </div>
-    </div>
-  </nav>
-
-  <!-- محتوای اصلی -->
+<!-- محتوای اصلی -->
   <main>
     <h1 class="section-title" id="categoryTitle">لیست خدمات کافی‌نت</h1>
     <div class="categories-bar" id="categoriesBar"></div>

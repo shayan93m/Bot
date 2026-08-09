@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>مجوزها و نمایندگی‌ها | سامانه هوشمند کافی‌نت من</title>
   <link rel="stylesheet" href="style.css">
+  <script src="nav.js"></script>
   <style>
     .page-hero {
       background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
@@ -167,6 +168,9 @@
     .c-shatel { background: linear-gradient(135deg, #f97316, #ea580c); }
     .c-asiatech { background: linear-gradient(135deg, #6366f1, #4f46e5); }
     .c-mokhaberat { background: linear-gradient(135deg, #64748b, #475569); }
+    .c-sunway { background: linear-gradient(135deg, #0ea5e9, #0369a1); }
+    .c-digikala { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .c-torob { background: linear-gradient(135deg, #f97316, #ea580c); }
 
     /* Services list */
     .services-list {
@@ -205,43 +209,9 @@
   </style>
 </head>
 <body>
-  <!-- هدر -->
-  <header>
-    <div style="width: 30px;"></div>
-    <div class="logo-container">
-      <div class="logo">سامانه هوشمند کافی نت من</div>
-    </div>
-    <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
-  </header>
+  <!-- هدر و منو از nav.js لود می‌شود -->
 
-  <!-- منوی کشویی -->
-  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-  <nav class="nav-menu" id="navMenu">
-    <button class="close-btn" onclick="toggleMenu()">✕</button>
-    <ul class="nav-top">
-      <li><a href="news.html">خبرها</a></li>
-      <li><a href="about.html">درباره ما</a></li>
-      <li><a href="licenses.html">مجوزهای ما</a></li>
-      <li><a href="policy.html">خط مشی مشتریان</a></li>
-      <li><a href="rules.html">قوانین سایت</a></li>
-      <li><a href="contact.html">ارتباط با ما</a></li>
-    </ul>
-    <div class="nav-bottom">
-      <a href="login.html" class="nav-orders" style="background:#eff6ff; border-color:#bfdbfe; color:#1d4ed8;">
-        👤 ثبت نام / ورود
-      </a>
-      <a href="orders.html" class="nav-orders">📋 سفارشات من</a>
-      <div class="balance-box">
-        <div class="balance-label">موجودی حساب شما</div>
-        <div class="balance-amount">۵۰۰٬۰۰۰ تومان</div>
-        <button class="charge-btn" onclick="alert('به زودی امکان شارژ موجودی فعال می‌شود')">
-          ⚡ شارژ موجودی
-        </button>
-      </div>
-    </div>
-  </nav>
-
-  <!-- هیرو -->
+<!-- هیرو -->
   <section class="page-hero">
     <h1>مجوزها و نمایندگی‌ها</h1>
     <p>با افتخار نزدیک به یک دهه در حوزه خدمات اینترنتی، مخابراتی و اداری فعالیت می‌کنیم و بیش از ۳۰۰ خدمت تخصصی و عمومی را به مشتریان عزیز ارائه می‌دهیم.</p>
@@ -255,7 +225,7 @@
         <span class="label">خدمت تخصصی</span>
       </div>
       <div class="stat-box">
-        <span class="num">۷</span>
+        <span class="num">۸</span>
         <span class="label">نمایندگی رسمی</span>
       </div>
     </div>
@@ -282,9 +252,9 @@
 
     <!-- نمایندگی‌ها -->
     <div class="section-card">
-      <h2>نمایندگی‌های رسمی اپراتورها و ISPها</h2>
+      <h2>نمایندگی‌های رسمی</h2>
       <p class="about-text" style="margin-bottom:8px;">
-        دارای نمایندگی رسمی از اپراتورهای اصلی کشور و ارائه‌دهندگان اینترنت هستیم:
+        با افتخار دارای نمایندگی رسمی از اپراتورهای برتر کشور و ارائه‌دهندگان اینترنت هستیم:
       </p>
       <div class="agencies-grid">
         <div class="agency-card">
@@ -322,6 +292,31 @@
           <div class="agency-name">مخابرات ایران</div>
           <div class="agency-type">نمایندگی رسمی</div>
         </div>
+        <div class="agency-card">
+          <div class="agency-logo c-sunway">سان‌وی</div>
+          <div class="agency-name">سان‌وی</div>
+          <div class="agency-type">نمایندگی رسمی SMS</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- فروشگاه‌های آنلاین -->
+    <div class="section-card">
+      <h2>فروشگاه‌های آنلاین</h2>
+      <p class="about-text" style="margin-bottom:8px;">
+        محصولات و خدمات ما در فروشگاه‌های معتبر آنلاین نیز در دسترس شماست:
+      </p>
+      <div class="agencies-grid">
+        <div class="agency-card">
+          <div class="agency-logo c-digikala">دیجی‌کالا</div>
+          <div class="agency-name">دیجی‌کالا</div>
+          <div class="agency-type">فروشگاه آنلاین</div>
+        </div>
+        <div class="agency-card">
+          <div class="agency-logo c-torob">ترب</div>
+          <div class="agency-name">ترب</div>
+          <div class="agency-type">فروشگاه آنلاین</div>
+        </div>
       </div>
     </div>
 
@@ -339,6 +334,8 @@
         <div class="service-item"><span class="icon">🖥️</span> فروش سرور مجازی (VPS)</div>
         <div class="service-item"><span class="icon">📌</span> آی‌پی استاتیک</div>
         <div class="service-item"><span class="icon">🔧</span> تنظیم و نصب مودم</div>
+        <div class="service-item"><span class="icon">🔌</span> فروش تجهیزات شبکه</div>
+        <div class="service-item"><span class="icon">🎧</span> پشتیبانی مشترکین</div>
       </div>
     </div>
 
@@ -350,11 +347,5 @@
     </div>
   </div>
 
-  <script>
-    function toggleMenu() {
-      document.getElementById('navMenu').classList.toggle('active');
-      document.getElementById('overlay').classList.toggle('active');
-    }
-  </script>
-</body>
+  </body>
 </html>
