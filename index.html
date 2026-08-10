@@ -268,27 +268,50 @@
       docItems.forEach((doc) => {
         const fieldGroup = document.createElement('div');
         fieldGroup.className = 'form-group';
-       
+
+        // اگر با ** شروع شود → فیلد آپلود فایل
+        const isFileField = doc.startsWith('**');
+        const cleanLabel = isFileField ? doc.replace(/^\*\*\s*/, '').trim() : doc;
+
         const label = document.createElement('label');
-        label.innerText = doc + ':';
+        label.innerText = cleanLabel + ':';
+        fieldGroup.appendChild(label);
+
         let input;
-        if (doc.includes('آدرس') || doc.includes('توضیحات')) {
+        if (isFileField) {
+          input = document.createElement('input');
+          input.type = 'file';
+          input.accept = 'image/*,.heic,.heif,.jpg,.jpeg,.png,.gif,.webp,.bmp,.pdf,.doc,.docx,.zip,.rar';
+          input.className = 'dynamic-doc-input dynamic-file-input';
+          input.dataset.label = cleanLabel;
+          input.required = true;
+          input.style.cssText = 'padding:10px; border:1px dashed #94a3b8; border-radius:8px; background:#f8fafc; width:100%;';
+          fieldGroup.appendChild(input);
+          const hint = document.createElement('small');
+          hint.style.cssText = 'display:block; margin-top:6px; color:#64748b; font-size:0.78rem;';
+          hint.innerText = 'فرمت‌های مجاز: JPG, PNG, HEIC , PDF، Word، ZIP';
+          fieldGroup.appendChild(hint);
+        } else if (cleanLabel.includes('آدرس') || cleanLabel.includes('توضیحات')) {
           input = document.createElement('textarea');
           input.rows = 2;
+          input.className = 'dynamic-doc-input';
+          input.dataset.label = cleanLabel;
+          input.required = true;
+          input.placeholder = 'وارد کنید...';
+          fieldGroup.appendChild(input);
         } else {
           input = document.createElement('input');
-          if (doc.includes('تماس') || doc.includes('موبایل') || doc.includes('تلفن') || doc.includes('کد ملی') || doc.includes('پستی') || doc.includes('حساب') || doc.includes('شبا')) {
+          if (cleanLabel.includes('تماس') || cleanLabel.includes('موبایل') || cleanLabel.includes('تلفن') || cleanLabel.includes('کد ملی') || cleanLabel.includes('پستی') || cleanLabel.includes('حساب') || cleanLabel.includes('شبا')) {
             input.type = 'tel';
           } else {
             input.type = 'text';
           }
+          input.className = 'dynamic-doc-input';
+          input.dataset.label = cleanLabel;
+          input.required = true;
+          input.placeholder = 'وارد کنید...';
+          fieldGroup.appendChild(input);
         }
-        input.className = 'dynamic-doc-input';
-        input.dataset.label = doc;
-        input.required = true;
-        input.placeholder = 'وارد کنید...';
-        fieldGroup.appendChild(label);
-        fieldGroup.appendChild(input);
         container.appendChild(fieldGroup);
       });
 
@@ -427,16 +450,31 @@
           throw new Error('خطا در ارسال پیام متنی');
         }
 
-        // ۲. ارسال فایل‌ها (اگر انتخاب شده باشند)
+        // ۲. ارسال فایل‌ها
+        // الف) فایل‌های علامت‌خورده با ** در مدارک
+        const dynamicFiles = document.querySelectorAll('.dynamic-file-input');
+        for (const input of dynamicFiles) {
+          if (input.files && input.files.length > 0) {
+            const file = input.files[0];
+            const label = input.dataset.label || 'فایل';
+            const formData = new FormData();
+            formData.append('document', file, file.name);
+            formData.append('caption', `📎 ${label} | ${serviceTitle} — ${name}`);
+            await fetch(PROXY_URL, {
+              method: 'POST',
+              body: formData
+            });
+          }
+        }
+
+        // ب) فایل‌های عمومی (پیوست اختیاری)
         const fileInput = document.getElementById('orderFiles');
         if (fileInput && fileInput.files && fileInput.files.length > 0) {
           for (let i = 0; i < fileInput.files.length; i++) {
             const file = fileInput.files[i];
             const formData = new FormData();
-            formData.append('chat_id', BALE_CHAT_ID);
             formData.append('document', file, file.name);
             formData.append('caption', `📎 پیوست سفارش: ${serviceTitle} — ${name} (${i + 1}/${fileInput.files.length})`);
-
             await fetch(PROXY_URL, {
               method: 'POST',
               body: formData
