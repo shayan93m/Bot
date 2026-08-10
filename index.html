@@ -114,11 +114,9 @@
   </div>
 
   <script>
-    const BALE_BOT_TOKEN = "877619133:9LBldbNTxSFZ9jfwKSVtC-5Tb0CX3yNkJL4";
-    const BALE_CHAT_ID = "5040875422";
+    // توکن‌های بله و کلید Gemini دیگر اینجا نیستند — از طریق Cloudflare Worker
+    // به‌صورت امن (Secret) نگهداری و استفاده می‌شوند.
     const PROXY_URL = "https://bot.youcoweb.workers.dev";
-   
-    const GEMINI_API_KEY = "AQ.Ab8RN6IDVJN_4JZmCYajqTXL5hcWpHFPMy3PflG6jhpk8Ne1jQ";
     let services = [];
     let currentCategory = 'همه';
     let currentSelectedServiceObj = null;
@@ -527,14 +525,10 @@
         chatHistory.push({ role: "model", parts: [{ text: "متوجه شدم. من دستیار تخصصی کافی‌نت هستم." }] });
       }
       chatHistory.push({ role: "user", parts: [{ text: text }] });
-      const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
       try {
-        const response = await fetch(geminiEndpoint, {
+        const response = await fetch(`${PROXY_URL}/gemini`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-goog-api-key": GEMINI_API_KEY
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             contents: chatHistory
           })
