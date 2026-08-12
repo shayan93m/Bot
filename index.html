@@ -4,38 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>سامانه هوشمند کافی‌نت من</title>
- 
   <link rel="stylesheet" href="style.css">
   <script src="nav.js"></script>
 </head>
 <body>
-  <!-- هدر و منو از nav.js لود می‌شود -->
-
-<!-- محتوای اصلی -->
   <main>
     <h1 class="section-title" id="categoryTitle">لیست خدمات کافی‌نت</h1>
     <div class="categories-bar" id="categoriesBar"></div>
     <div class="services-grid" id="servicesGrid"></div>
   </main>
 
-  <!-- دکمه ربات هوش مصنوعی -->
   <div class="ai-bot-btn" onclick="openAiChat()" title="گفتگو با هوش مصنوعی">
     <img src="Ai.svg" alt="هوش مصنوعی" style="width:32px; height:32px; object-fit:contain;">
   </div>
 
-  <!-- کادر جستجو -->
   <footer>
     <div class="search-container">
       <ul class="search-results-list" id="searchResults"></ul>
       <div class="search-box">
-        <input type="text" id="searchInput" 
-               onkeyup="liveSearch()" 
-               placeholder="جستجوی تمامی خدمات یا کد خدمت..."
-               autocomplete="off">
+        <input type="text" id="searchInput" onkeyup="liveSearch()" placeholder="جستجوی تمامی خدمات یا کد خدمت..." autocomplete="off">
       </div>
     </div>
   </footer>
 
+  <!-- مدال‌ها و بقیه بخش‌ها (بدون کدهای AI) -->
   <!-- مدال جزئیات خدمت -->
   <div class="modal" id="serviceModal" onclick="if(event.target===this) closeModal('serviceModal')">
     <div class="modal-content">
@@ -96,43 +88,12 @@
     </div>
   </div>
 
-  <!-- مدال هوش مصنوعی -->
-  <div class="modal" id="aiModal" onclick="if(event.target===this) closeModal('aiModal')">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>🤖 دستیار هوشمند کافی‌نت</h2>
-        <span style="cursor:pointer;" onclick="closeModal('aiModal')">✕</span>
-      </div>
-      <div class="chat-box" id="chatBox">
-        <div class="chat-msg ai">سلام! من دستیار هوشمند کافی‌نت هستم. چطور می‌توانم در زمینه امور اینترنتی، ثبت‌نام‌ها یا خدمات بانکی و قضایی به شما کمک کنم؟</div>
-      </div>
-      <div class="chat-input-area">
-        <input type="text" id="chatInput" placeholder="سوال خود را بنویسید..." onkeypress="handleKeyPress(event)">
-        <button class="chat-send-btn" onclick="sendAiMessage()" id="aiSendBtn">ارسال</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    // توکن‌های بله و کلید Gemini دیگر اینجا نیستند — از طریق Cloudflare Worker
-    // به‌صورت امن (Secret) نگهداری و استفاده می‌شوند.
-    const PROXY_URL = "https://bot.youcoweb.workers.dev";
+    // ==================== کدهای اصلی بدون AI ====================
     let services = [];
     let currentCategory = 'همه';
     let currentSelectedServiceObj = null;
-    let chatHistory = [];
-    let SYSTEM_PROMPT = "";
     let savedScrollY = 0;
-    let captchaResult = 0;
-
-    function lockBodyScroll() {
-      savedScrollY = window.scrollY;
-      document.body.style.top = `-${savedScrollY}px`;
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.classList.add('modal-open');
-    }
-
 
     fetch('services.json')
       .then(response => {
@@ -143,22 +104,8 @@
         services = data;
         renderCategories();
         renderServices();
-        initSystemPrompt();
       })
-      .catch(error => {
-        console.error('خطا در بارگذاری خدمات:', error);
-      });
-
-    function initSystemPrompt() {
-      const serviceTitles = services.map(s => `${s.id}. ${s.title}`).join('، ');
-      SYSTEM_PROMPT = `شما یک دستیار هوشمند و بسیار مودب برای یک کافی‌نت هستید.
-قوانین بسیار مهم که باید صراحتاً رعایت کنید:
-۱. فقط و فقط به سوالات مرتبط با خدمات کافی‌نت، امور اینترنتی، سامانه‌های دولتی (ثنا، سخا، مای‌مدیو، املاک، بیمه، مالیات، سجام و...) و وام‌ها/ثبت‌نام‌ها پاسخ دهید.
-۲. اگر کاربر سوالی نامربوط به حوزه کاری کافی‌نت پرسید، خیلی محترمانه پاسخ دهید: "عذرخواهی می‌کنم، من دستیار تخصصی خدمات کافی‌نت هستم و فقط می‌توانم در زمینه ثبت‌نام‌ها، سامانه‌ها و امور اینترنتی به شما پاسخ دهم."
-۳. لیست کامل خدمات کافی‌نت ما به همراه آیدی شامل این موارد است: ${serviceTitles}.
-۴. اگر کاربر درخواست انجام یکی از خدمات فوق را داشت، یا سوالش با یکی از خدمات مرتبط بود، او را تشویق کنید که سفارش دهد و در پاسخ خود حتما عبارت کلیدی [ORDER:کد_عنوان_خدمت] را قرار دهید تا سیستم دکمه فرم سفارش را برای او باز کند. مثلا اگر خواست ثبت نام ثنا انجام دهد بنویسید [ORDER:۱. ثبت نام ثنا].
-۵. پاسخ‌ها را کوتاه، مفید و دقیق بدهید.`;
-    }
+      .catch(error => console.error('خطا در بارگذاری خدمات:', error));
 
     function renderCategories() {
       const categories = ['همه', ...new Set(services.map(s => s.cat))];
@@ -176,9 +123,7 @@
 
     function renderServices() {
       const grid = document.getElementById('servicesGrid');
-      const filtered = currentCategory === 'همه'
-        ? services
-        : services.filter(s => s.cat === currentCategory);
+      const filtered = currentCategory === 'همه' ? services : services.filter(s => s.cat === currentCategory);
       grid.innerHTML = filtered.map(s => `
         <div class="service-card" onclick="openServiceModal('${s.id}')">
           <h3>${s.id}. ${s.title}</h3>
@@ -187,23 +132,16 @@
       `).join('');
     }
 
-    function toggleMenu() {
-      document.getElementById('navMenu').classList.toggle('active');
-      document.getElementById('overlay').classList.toggle('active');
-    }
-
     function openServiceModal(serviceId) {
       const item = services.find(s => s.id == serviceId);
       if (!item) return;
       currentSelectedServiceObj = item;
       document.getElementById('modalTitle').innerText = `${item.id}. ${item.title}`;
-     
-      document.getElementById('modalDesc').innerText = item.decs || item.desc || 'توضیحی برای این خدمت ثبت نشده است.';
+      document.getElementById('modalDesc').innerText = item.decs || 'توضیحی برای این خدمت ثبت نشده است.';
       document.getElementById('modalDocs').innerText = item.docs || 'مدارک خاصی ذکر نشده است.';
       document.getElementById('modalCost').innerText = item.cost || 'طبق تعرفه';
       document.getElementById('modalTime').innerText = item.time || 'سریع';
-      document.getElementById('modalSystemTime').innerText = item.systemTime || item.system_time || 'مشخص‌نشده';
-     
+      document.getElementById('modalSystemTime').innerText = item.systemTime || 'مشخص‌نشده';
       document.getElementById('serviceModal').style.display = 'flex';
       lockBodyScroll();
     }
@@ -214,60 +152,37 @@
         if (found) currentSelectedServiceObj = found;
       }
       closeModal('serviceModal');
-      closeModal('aiModal');
-      const titleText = currentSelectedServiceObj
-        ? `${currentSelectedServiceObj.id}. ${currentSelectedServiceObj.title}`
-        : 'خدمات عمومی';
+      const titleText = currentSelectedServiceObj ? `${currentSelectedServiceObj.id}. ${currentSelectedServiceObj.title}` : 'خدمات عمومی';
       document.getElementById('orderServiceTitle').innerText = titleText;
       const container = document.getElementById('dynamicInputsContainer');
       container.innerHTML = '';
 
       const rawDocs = currentSelectedServiceObj?.docs || '';
-     
       let docItems = rawDocs.split(/،|-|\n/).map(d => d.trim()).filter(d => d.length > 0);
 
-      // نرمال‌سازی عنوان‌های مربوط به تلفن بنام متقاضی / شخص متقاضی
+      // نرمال‌سازی تلفن
       docItems = docItems.map(d => {
         const lower = d.replace(/ي/g, 'ی').replace(/ك/g, 'ک');
-        if (
-          (lower.includes('سیم کارت') || lower.includes('تلفن') || lower.includes('موبایل') || lower.includes('شماره')) &&
-          (lower.includes('بنام متقاضی') || lower.includes('به نام متقاضی') || lower.includes('بنام شخص متقاضی') || lower.includes('به نام شخص متقاضی'))
-        ) {
+        if ((lower.includes('سیم کارت') || lower.includes('تلفن') || lower.includes('موبایل') || lower.includes('شماره')) && 
+            (lower.includes('بنام متقاضی') || lower.includes('به نام متقاضی'))) {
           return 'تلفن همراه بنام متقاضی';
         }
         return d;
       });
 
-      // آیا فیلد تلفن مخصوص متقاضی وجود دارد؟
       const hasApplicantPhone = docItems.some(d => d === 'تلفن همراه بنام متقاضی');
+      docItems = docItems.filter(d => !(d.includes('تماس') || d.includes('موبایل') || d.includes('تلفن') || d.includes('شماره تماس') || d.includes('شماره همراه')));
 
-      // حذف بقیه فیلدهای تلفن/موبایل معمولی برای جلوگیری از تکرار
-      docItems = docItems.filter(d => {
-        if (d === 'تلفن همراه بنام متقاضی') return true;
-        if (d.includes('تماس') || d.includes('موبایل') || d.includes('تلفن') || d.includes('شماره تماس') || d.includes('شماره همراه')) {
-          return false;
-        }
-        return true;
-      });
-
-      // ----- ترتیب فیلدها -----
-      // 1. تلفن همراه (فقط اگر نسخه بنام متقاضی وجود نداشت)
       if (!hasApplicantPhone) {
         const phoneGroup = document.createElement('div');
         phoneGroup.className = 'form-group';
-        phoneGroup.innerHTML = `
-          <label>تلفن همراه:</label>
-          <input type="tel" class="dynamic-doc-input" data-label="تلفن همراه" required placeholder="مثال: ۰۹۱۲۳۴۵۶۷۸۹">
-        `;
+        phoneGroup.innerHTML = `<label>تلفن همراه:</label><input type="tel" class="dynamic-doc-input" data-label="تلفن همراه" required placeholder="مثال: ۰۹۱۲۳۴۵۶۷۸۹">`;
         container.appendChild(phoneGroup);
       }
 
-      // 2. بقیه مدارک (از جمله تلفن همراه بنام متقاضی اگر وجود داشت)
       docItems.forEach((doc) => {
         const fieldGroup = document.createElement('div');
         fieldGroup.className = 'form-group';
-
-        // اگر با ** شروع شود → فیلد آپلود فایل
         const isFileField = doc.startsWith('**');
         const cleanLabel = isFileField ? doc.replace(/^\*\*\s*/, '').trim() : doc;
 
@@ -313,14 +228,10 @@
         container.appendChild(fieldGroup);
       });
 
-      // 3. آپلود چند فایل (قبل از توضیحات تکمیلی)
+      // فایل‌های پیوست
       const fileGroup = document.createElement('div');
       fileGroup.className = 'form-group';
-      fileGroup.innerHTML = `
-        <label>پیوست فایل (اختیاری - می‌توانید چند فایل انتخاب کنید):</label>
-        <input type="file" id="orderFiles" class="dynamic-doc-input" data-label="فایل‌های پیوست" multiple accept="image/*,.heic,.heif,.jpg,.jpeg,.png,.gif,.webp,.bmp,.pdf,.doc,.docx,.zip,.rar" style="padding:10px; border:1px dashed #94a3b8; border-radius:8px; background:#f8fafc;">
-        <small style="display:block; margin-top:6px; color:#64748b; font-size:0.78rem;">فرمت‌های مجاز: JPG, PNG, HEIC , PDF، Word، ZIP</small>
-      `;
+      fileGroup.innerHTML = `<label>پیوست فایل (اختیاری):</label><input type="file" id="orderFiles" class="dynamic-doc-input" data-label="فایل‌های پیوست" multiple accept="image/*,.heic,.heif,.jpg,.jpeg,.png,.gif,.webp,.bmp,.pdf,.doc,.docx,.zip,.rar" style="padding:10px; border:1px dashed #94a3b8; border-radius:8px; background:#f8fafc;">`;
       container.appendChild(fileGroup);
 
       document.getElementById('orderModal').style.display = 'flex';
@@ -328,25 +239,17 @@
       generateCaptcha();
     }
 
-    
     function generateCaptcha() {
-      const a = Math.floor(Math.random() * 8) + 2; // 2-9
+      const a = Math.floor(Math.random() * 8) + 2;
       const b = Math.floor(Math.random() * 8) + 2;
       captchaResult = a + b;
-      const el = document.getElementById('captchaQuestion');
-      if (el) el.innerText = `${a} + ${b} = ؟`;
-      const input = document.getElementById('captchaAnswer');
-      if (input) input.value = '';
+      document.getElementById('captchaQuestion').innerText = `${a} + ${b} = ؟`;
     }
 
     function closeModal(modalId) {
       document.getElementById(modalId).style.display = 'none';
-      const anyOpen = ['serviceModal', 'orderModal', 'aiModal'].some(id => {
-        const el = document.getElementById(id);
-        return el && el.style.display === 'flex';
-      });
+      const anyOpen = ['serviceModal', 'orderModal'].some(id => document.getElementById(id).style.display === 'flex');
       if (!anyOpen) {
-        // آزاد کردن اسکرول بدون پرش
         document.body.classList.remove('modal-open');
         document.body.style.top = '';
         document.body.style.position = '';
@@ -358,25 +261,18 @@
     function liveSearch() {
       const query = document.getElementById('searchInput').value.trim().toLowerCase();
       const resultsContainer = document.getElementById('searchResults');
-     
       if (query === '') {
         resultsContainer.style.display = 'none';
         resultsContainer.innerHTML = '';
         return;
       }
-
       const filtered = services.filter(s => {
         const title = String(s.title || '').toLowerCase();
         const cat = String(s.cat || '').toLowerCase();
         const id = String(s.id || '').toLowerCase();
         const desc = String(s.decs || s.desc || '').toLowerCase();
-
-        return title.includes(query) || 
-               cat.includes(query) || 
-               id.includes(query) || 
-               desc.includes(query);
+        return title.includes(query) || cat.includes(query) || id.includes(query) || desc.includes(query);
       });
-
       if (filtered.length > 0) {
         resultsContainer.innerHTML = filtered.map(s => `
           <li onclick="selectSearchResult('${s.id}')">
@@ -397,168 +293,37 @@
       openServiceModal(serviceId);
     }
 
-    async function submitOrder(e) {
-      e.preventDefault();
+    function lockBodyScroll() {
+      savedScrollY = window.scrollY;
+      document.body.style.top = `-${savedScrollY}px`;
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.classList.add('modal-open');
+    }
 
-      // بررسی کپچا
-      const userCaptcha = parseInt(document.getElementById('captchaAnswer').value, 10);
-      if (userCaptcha !== captchaResult) {
-        alert('کد امنیتی اشتباه است. لطفاً دوباره محاسبه کنید.');
-        generateCaptcha();
-        return;
-      }
+    // تابع جدید برای فیکس کامل کیبورد
+    function adjustFooterForKeyboard() {
+      const footer = document.querySelector('footer');
+      const aiBtn = document.querySelector('.ai-bot-btn');
+      const visualHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
-      const submitBtn = document.getElementById('submitBtn');
-      submitBtn.innerText = 'در حال ارسال...';
-      submitBtn.disabled = true;
-
-      const name = document.getElementById('custName').value;
-      const notes = document.getElementById('custNotes').value || 'ندارد';
-      const dynamicInputs = document.querySelectorAll('.dynamic-doc-input:not([type="file"])');
-      let collectedDocsData = "";
-      dynamicInputs.forEach(input => {
-        const labelText = input.dataset.label;
-        const val = input.value.trim() || 'وارد نشده';
-        collectedDocsData += `\n📌 *${labelText}:* \`${val}\``;
-      });
-
-      const serviceTitle = currentSelectedServiceObj
-        ? `${currentSelectedServiceObj.id}. ${currentSelectedServiceObj.title}`
-        : 'مشخص‌نشده';
-
-      const messageText = `📦 *سفارش جدید دریافت شد!*
-────────────────
-🛠 *خدمت:* ${serviceTitle}
-👤 *نام مشتری:* ${name}${collectedDocsData}
-📝 *توضیحات تکمیلی:* ${notes}
-🌐 *منبع سفارش:* وب‌سایت
-⏱ *زمان ثبت:* ${new Date().toLocaleTimeString('fa-IR')}`;
-
-      try {
-        // ۱. ارسال پیام متنی
-        const textRes = await fetch(PROXY_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text: messageText
-          })
-        });
-
-        if (!textRes.ok) {
-          throw new Error('خطا در ارسال پیام متنی');
-        }
-
-        // ۲. ارسال فایل‌ها
-        // الف) فایل‌های علامت‌خورده با ** در مدارک
-        const dynamicFiles = document.querySelectorAll('.dynamic-file-input');
-        for (const input of dynamicFiles) {
-          if (input.files && input.files.length > 0) {
-            const file = input.files[0];
-            const label = input.dataset.label || 'فایل';
-            const formData = new FormData();
-            formData.append('document', file, file.name);
-            formData.append('caption', `📎 ${label} | ${serviceTitle} — ${name}`);
-            await fetch(PROXY_URL, {
-              method: 'POST',
-              body: formData
-            });
-          }
-        }
-
-        // ب) فایل‌های عمومی (پیوست اختیاری)
-        const fileInput = document.getElementById('orderFiles');
-        if (fileInput && fileInput.files && fileInput.files.length > 0) {
-          for (let i = 0; i < fileInput.files.length; i++) {
-            const file = fileInput.files[i];
-            const formData = new FormData();
-            formData.append('document', file, file.name);
-            formData.append('caption', `📎 پیوست سفارش: ${serviceTitle} — ${name} (${i + 1}/${fileInput.files.length})`);
-            await fetch(PROXY_URL, {
-              method: 'POST',
-              body: formData
-            });
-          }
-        }
-
-        alert('✅ سفارش شما با موفقیت ثبت شد. به‌زودی با شما تماس می‌گیریم.');
-        document.getElementById('custName').value = '';
-        document.getElementById('custNotes').value = '';
-        if (fileInput) fileInput.value = '';
-        closeModal('orderModal');
-
-      } catch (err) {
-        console.error('Bale Error:', err);
-        const msg = (err && err.message) ? err.message : String(err);
-        alert('خطا در ارسال سفارش:\n' + msg + '\n\nاگر مشکل CORS است، باید از طریق سرور میانی ارسال شود.');
-      } finally {
-        submitBtn.innerText = 'ارسال سفارش';
-        submitBtn.disabled = false;
+      if (visualHeight < 700) {
+        // کیبورد باز است
+        footer.style.bottom = '0';
+        aiBtn.style.display = 'none';
+      } else {
+        footer.style.bottom = '0';
+        aiBtn.style.display = 'block';
       }
     }
 
-    function openAiChat() {
-      document.getElementById('aiModal').style.display = 'flex';
-      lockBodyScroll();
-    }
-
-    function handleKeyPress(e) {
-      if (e.key === 'Enter') sendAiMessage();
-    }
-
-    async function sendAiMessage() {
-      const input = document.getElementById('chatInput');
-      const text = input.value.trim();
-      if (!text) return;
-      const chatBox = document.getElementById('chatBox');
-      const sendBtn = document.getElementById('aiSendBtn');
-      chatBox.innerHTML += `<div class="chat-msg user">${text}</div>`;
-      input.value = '';
-      chatBox.scrollTop = chatBox.scrollHeight;
-      const loadingDiv = document.createElement('div');
-      loadingDiv.className = 'chat-msg ai';
-      loadingDiv.innerText = 'در حال بررسی سوال...';
-      chatBox.appendChild(loadingDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
-      sendBtn.disabled = true;
-      if (chatHistory.length === 0 && SYSTEM_PROMPT) {
-        chatHistory.push({ role: "user", parts: [{ text: "دستورالعمل سیستم: " + SYSTEM_PROMPT }] });
-        chatHistory.push({ role: "model", parts: [{ text: "متوجه شدم. من دستیار تخصصی کافی‌نت هستم." }] });
+    // گوش دادن به تغییرات ویو پورت
+    window.addEventListener('load', () => {
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', adjustFooterForKeyboard);
       }
-      chatHistory.push({ role: "user", parts: [{ text: text }] });
-      try {
-        const response = await fetch(`${PROXY_URL}/gemini`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: chatHistory
-          })
-        });
-        if (response.ok) {
-          const data = await response.json();
-          let aiResponse = data.candidates[0].content.parts[0].text;
-         
-          chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
-          let orderBtnHtml = "";
-          const orderMatch = aiResponse.match(/\[ORDER:(.*?)\]/);
-          if (orderMatch) {
-            const targetService = orderMatch[1];
-            aiResponse = aiResponse.replace(/\[ORDER:.*?\]/g, "");
-            orderBtnHtml = `<br><button class="inline-order-btn" onclick="openOrderModal('${targetService}')">📝 ثبت سفارش ${targetService}</button>`;
-          }
-          loadingDiv.innerHTML = aiResponse + orderBtnHtml;
-        } else {
-          const errData = await response.json();
-          console.error("Gemini Error Details:", errData);
-          loadingDiv.innerText = `خطا در دریافت پاسخ (${response.status}). لطفاً اتصال اینترنت/تحریم‌شکن را بررسی کنید.`;
-        }
-      } catch (err) {
-        console.error("Network Error:", err);
-        loadingDiv.innerText = "خطا در برقراری ارتباط با شبکه.";
-      } finally {
-        sendBtn.disabled = false;
-        chatBox.scrollTop = chatBox.scrollHeight;
-      }
-    }
+      adjustFooterForKeyboard();
+    });
   </script>
 </body>
 </html>
