@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>درباره ما | سامانه هوشمند کافی‌نت من</title>
+  
+  <!-- فراخوانی استایل اصلی از پوشه css -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- فراخوانی اسکریپت ساخت هدر و منوی بالا -->
+  <script src="nav.js"></script>
+
+  <style>
+    .page-hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      padding: 50px 20px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 60%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .page-hero h1 {
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .page-hero p {
+      font-size: 1rem;
+      opacity: 0.9;
+      max-width: 650px;
+      margin: 0 auto;
+      line-height: 1.7;
+      position: relative;
+    }
+
+    .content-section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 16px 80px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #3b82f6;
+      font-weight: 600;
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+    }
+    .back-link:hover { color: #1e3a8a; }
+
+    .section-card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px 22px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border: 1px solid #e2e8f0;
+    }
+    .section-card h2 {
+      font-size: 1.25rem;
+      color: #1e3a8a;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-card h2::before {
+      content: '';
+      width: 4px;
+      height: 22px;
+      background: #3b82f6;
+      border-radius: 2px;
+    }
+    .section-card p {
+      color: #334155;
+      font-size: 0.95rem;
+      line-height: 1.85;
+      text-align: justify;
+      margin: 0 0 12px;
+    }
+
+    /* گرید خدمات */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .service-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: all 0.2s ease;
+    }
+    .service-item:hover {
+      border-color: #bfdbfe;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(59,130,246,0.06);
+    }
+    .service-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #eff6ff;
+      color: #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .service-content h3 {
+      font-size: 0.95rem;
+      color: #0f172a;
+      margin: 0 0 4px;
+      font-weight: 700;
+    }
+    .service-content p {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin: 0;
+      line-height: 1.6;
+      text-align: right;
+    }
+
+    /* باکس هشدار امنیتی */
+    .security-alert-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 10px;
+    }
+    .security-alert-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #b45309;
+      font-weight: 800;
+      font-size: 1.05rem;
+      margin-bottom: 10px;
+    }
+    .security-alert-box p {
+      color: #92400e;
+      font-size: 0.92rem;
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+    .channel-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .channel-badge {
+      background: #ffffff;
+      border: 1px solid #fcd34d;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #78350f;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ویژگی‌های سازمانی */
+    .features-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .features-list li {
+      position: relative;
+      padding-right: 24px;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: #334155;
+      text-align: justify;
+    }
+    .features-list li::before {
+      content: "✓";
+      position: absolute;
+      right: 4px;
+      color: #10b981;
+      font-size: 1.1rem;
+      font-weight: 900;
+    }
+    .features-list li strong {
+      color: #0f172a;
+    }
+  </style>
+</head>
+<body>
+  <!-- هدر و منو به‌صورت خودکار توسط nav.js ساخته می‌شود -->
+
+  <!-- هیرو -->
+  <section class="page-hero">
+    <h1>درباره سامانه هوشمند کافی‌نت من</h1>
+    <p>سامانه‌ای مدرن، سریع و ایمن تحت نظارت کافی‌نت شایان، جهت ارائه و پیگیری خدمات اداری، ثبتی و اینترنتی شما به صورت کاملاً غیرحضوری و تخصصی.</p>
+  </section>
+
+  <div class="content-section">
+    <a href="index.html" class="back-link">← بازگشت به صفحه اصلی</a>
+
+    <!-- معرفی مجموعه -->
+    <div class="section-card">
+      <h2>معرفی مجموعه و نظارت کیفی</h2>
+      <p>
+        <strong>سامانه هوشمند کافی‌نت من</strong> با اتکا به سابقه و مجوزهای رسمی <strong>کافی‌نت شایان</strong> با هدف تسهیل، هوشمندسازی و تسریع امور اداری و اینترنتی هموطنان گرامی راه‌اندازی شده است.
+      </p>
+      <p>
+        کیفیت ارائه خدمات و حفظ امنیت داده‌های کاربران اولویت اصلی ماست. از این رو، تمامی پرسنل و کارشناسان فنی پیش از شروع فعالیت، دوره‌های آموزشی جامع و تخصصی را گذرانده‌اند و همچنین تمامی سفارشات ثبت‌شده قبل و بعد از پردازش، به صورت مستقیم و مستمر توسط <strong>مدیریت مجموعه</strong> بررسی و نظارت کیفی می‌شوند تا فرآیندها با بالاترین دقت ممکن انجام پذیرند.
+      </p>
+    </div>
+
+    <!-- خدمات سامانه -->
+    <div class="section-card">
+      <h2>خدمات قابل ارائه در سامانه</h2>
+      <p>ما طیف گسترده‌ای از خدمات عمومی، اداری، مالیاتی و سازمانی را به صورت یکپارچه و دقیق ارائه می‌دهیم:</p>
+      
+      <div class="services-grid">
+        <div class="service-item">
+          <div class="service-icon">📝</div>
+          <div class="service-content">
+            <h3>ثبت‌نام‌های اینترنتی</h3>
+            <p>ثبت‌نام در انواع آزمون‌ها، کنکور، استخدامی‌ها، سامانه‌های دانشگاهی و قرعه‌کشی‌ها.</p>
+          </div>
+        </div>
+
+        <div class="service-item">
+          <div class="service-icon">📊</div>
+          <div class="service-content">
+            <h3>امور مالیاتی و اصناف</h3>
+            <p>تشکیل پرونده مالیاتی، اظهارنامه‌های تبصره ۱۰۰ و صدور و پیگیری پروانه کسب.</p>
+          </div>
+        </div>
+
+        <div class="service-item">
+          <div class="service-icon">⚖️</div>
+          <div class="service-content">
+            <h3>سامانه‌های قضایی و دولتی</h3>
+            <p>ثبت ثنا، نوبت‌دهی قضایی، پیگیری پرونده‌ها و استعلامات الکترونیکی دولت.</p>
+          </div>
+        </div>
+
+        <div class="service-item">
+          <div class="service-icon">🏦</div>
+          <div class="service-content">
+            <h3>خدمات بانکی و تسهیلات</h3>
+            <p>ثبت‌نام انواع وام‌های ازدواج، فرزندآوری، مسکن و سامانه‌های اعتبارسنجی.</p>
+          </div>
+        </div>
+
+        <div class="service-item">
+          <div class="service-icon">📱</div>
+          <div class="service-content">
+            <h3>خدمات ارتباطی و سیم‌کارت</h3>
+            <p>ارائه و مدیریت خدمات ارتباطی و نمایندگی رسمی اپراتورها.</p>
+          </div>
+        </div>
+
+        <div class="service-item">
+          <div class="service-icon">📑</div>
+          <div class="service-content">
+            <h3>فیش و احکام کارمندی</h3>
+            <p>دریافت فیش حقوقی، احکام بازنشستگان و امور سامانه سخا و آموزش و پرورش.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- خط‌مشی و ویژگی‌ها -->
+    <div class="section-card">
+      <h2>ارزش‌ها و ویژگی‌های کلیدی</h2>
+      <ul class="features-list">
+        <li>
+          <strong>پرسنل آموزش‌دیده:</strong> اجرای امور فنی تنها توسط کارشناسانی که دوره‌های تخصصی را سپری کرده‌اند انجام می‌شود.
+        </li>
+        <li>
+          <strong>بررسی دو مرحله‌ای:</strong> بازبینی دقیق هر سفارش توسط مدیریت جهت جلوگیری از بروز خطای انسانی در ثبت اطلاعات حساس.
+        </li>
+        <li>
+          <strong>محرمانگی اسناد:</strong> نگهداری مدارک هویتی در فضایی کاملاً ایمن و حذف آنها پس از تکمیل نهایی خدمت درخواستی.
+        </li>
+        <li>
+          <strong>پیگیری شفاف:</strong> ارائه مستندات، رسیدهای پرداخت و کدهای رهگیری معتبر بلافاصله پس از اتمام ثبت‌نام.
+        </li>
+      </ul>
+    </div>
+
+    <!-- هشدار امنیتی راه‌های ارتباطی -->
+    <div class="section-card" style="border-color: #fde68a;">
+      <div class="security-alert-box">
+        <div class="security-alert-header">
+          <span>⚠️</span>
+          <span>اطلاعیه مهم امنیتی (کانال‌های رسمی ارتباط با ما)</span>
+        </div>
+        <p>
+          جهت پیشگیری از هرگونه سوءاستفاده یا کلاهبرداری، توجه داشته باشید که تماس‌ها، پیامک‌ها و ارسال کدهای تایید تنها و منحصراً از طریق مراجع رسمی زیر انجام می‌پذیرد:
+        </p>
+
+        <div class="channel-badges">
+          <div class="channel-badge">
+            <span>📞 تلفن پشتیبانی رسمی:</span>
+            <strong style="direction: ltr;">۰۲۱-۹۱۰۱۱۱۰۲</strong>
+          </div>
+          <div class="channel-badge">
+            <span>💬 سرشماره رسمی پیامک:</span>
+            <strong style="direction: ltr;">۱۰۰۰۲۱۹۱۰۱۱۱۰۲</strong>
+          </div>
+        </div>
+
+        <p style="margin-top: 14px; font-weight: 700;">
+          هرگونه تماس یا ارسال پیامک با سرشماره‌های شخصی، سیم‌کارت‌های اعتباری یا شماره‌های غیر از موارد فوق، به‌هیچ‌وجه متعلق به این مجموعه نبوده و فاقد اعتبار است.
+        </p>
+      </div>
+    </div>
+
+    <!-- متن پایانی -->
+    <div class="section-card" style="background: linear-gradient(135deg, #eff6ff, #f0f9ff); border-color:#bfdbfe;">
+      <p style="margin:0; text-align:center; font-weight:600; color:#1e3a8a; font-size:0.95rem; line-height: 1.8;">
+        هدف ما، تجربه‌ای سریع، بدون دغدغه و مطمئن در دریافت خدمات الکترونیک برای شماست.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
