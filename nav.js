@@ -1,67 +1,73 @@
-// nav.js - منوی مشترک برای همه صفحات
-// فقط این فایل را تغییر دهید تا منو در تمام صفحات به‌روز شود
+// nav.js
 
-(function() {
-  const headerHTML = `
-  <header>
-    <div style="width: 30px;"></div>
-    <div class="logo-container">
-      <a href="index.html" class="logo" style="text-decoration:none; color:inherit;">سامانه هوشمند کافی نت من</a>
-    </div>
-    <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
-  </header>
-  `;
+document.addEventListener('DOMContentLoaded', () => {
+  initNavbar();
+  initTheme();
+});
 
-  const navHTML = `
-  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-  <nav class="nav-menu" id="navMenu">
-    <button class="close-btn" onclick="toggleMenu()">✕</button>
-
-    <ul class="nav-top">
-      <li><a href="news.html">خبرها</a></li>
-      <li><a href="about.html">درباره ما</a></li>
-      <li><a href="licenses.html">مجوزهای ما</a></li>
-      <li><a href="policy.html">خط مشی مشتریان</a></li>
-      <li><a href="rules.html">قوانین سایت</a></li>
-      <li><a href="contact.html">ارتباط با ما</a></li>
-    </ul>
-
-    <div class="nav-bottom">
-      <a href="login.html" class="nav-orders" style="background:#eff6ff; border-color:#bfdbfe; color:#1d4ed8;">
-        👤 ثبت نام / ورود
-      </a>
-      <a href="orders.html" class="nav-orders">📋 سفارشات من</a>
-
-      <div class="balance-box">
-        <div class="balance-label">موجودی حساب شما</div>
-        <div class="balance-amount">۵۰۰٬۰۰۰ تومان</div>
-        <button class="charge-btn" onclick="alert('به زودی امکان شارژ موجودی فعال می‌شود')">
-          ⚡ شارژ موجودی
+function initNavbar() {
+  const headerHtml = `
+    <header class="app-header" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background: var(--card-bg, #ffffff); border-bottom: 1px solid var(--border-color, #e2e8f0); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+      <div class="header-right" style="display: flex; align-items: center; gap: 12px;">
+        <!-- دکمه دارک مود در سمت راست منو -->
+        <button id="themeToggleBtn" class="theme-toggle-btn" title="تغییر تم (روز / شب)">
+          🌙
         </button>
+        <a href="index.html" class="brand-logo" style="font-weight: 800; font-size: 1.1rem; text-decoration: none; color: var(--text-color, #1e293b);">
+          کافی‌نت من
+        </a>
       </div>
-    </div>
-  </nav>
+
+      <nav class="header-nav">
+        <ul style="display: flex; list-style: none; gap: 15px; margin: 0; padding: 0;">
+          <li><a href="index.html" style="text-decoration: none; color: var(--text-color, #1e293b); font-weight: 600; font-size: 0.95rem;">صفحه اصلی</a></li>
+          <li><a href="licenses.html" style="text-decoration: none; color: var(--text-color, #1e293b); font-weight: 600; font-size: 0.95rem;">مجوزها</a></li>
+        </ul>
+      </nav>
+    </header>
   `;
 
-  // درج هدر و منو در ابتدای body
-  document.addEventListener('DOMContentLoaded', function() {
-    // اگر قبلاً هدر وجود داشت، حذفش کن تا تکراری نشود
-    const existingHeader = document.querySelector('header');
-    const existingOverlay = document.getElementById('overlay');
-    const existingNav = document.getElementById('navMenu');
-    
-    if (existingHeader) existingHeader.remove();
-    if (existingOverlay) existingOverlay.remove();
-    if (existingNav) existingNav.remove();
+  document.body.insertAdjacentHTML('afterbegin', headerHtml);
 
-    document.body.insertAdjacentHTML('afterbegin', headerHTML + navHTML);
+  // اتصال رویداد کلیک دکمه تغییر تم
+  const themeBtn = document.getElementById('themeToggleBtn');
+  if (themeBtn) {
+    themeBtn.addEventListener('click', toggleTheme);
+  }
+}
+
+// مدیریت دارک‌مود و همگام‌سازی با تم سیستم‌عامل/گوشی
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  // انتخاب تم بر اساس ذخیره قبلی یا تنظیمات گوشی کاربر
+  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+    setTheme('dark');
+  } else {
+    setTheme('light');
+  }
+
+  // شنود تغییرات تم گوشی به صورت زنده
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (!localStorage.getItem('theme')) {
+      setTheme(e.matches ? 'dark' : 'light');
+    }
   });
-})();
+}
 
-// تابع باز و بسته کردن منو (باید در اسکوپ global باشد)
-function toggleMenu() {
-  const nav = document.getElementById('navMenu');
-  const overlay = document.getElementById('overlay');
-  if (nav) nav.classList.toggle('active');
-  if (overlay) overlay.classList.toggle('active');
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  
+  setTheme(newTheme);
+  localStorage.setItem('theme', newTheme);
+}
+
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const themeBtn = document.getElementById('themeToggleBtn');
+  if (themeBtn) {
+    themeBtn.innerText = theme === 'dark' ? '☀️' : '🌙';
+  }
 }
