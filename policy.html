@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>خط‌مشی و حریم خصوصی | سامانه هوشمند کافی‌نت من</title>
+  
+  <!-- فراخوانی استایل اصلی از پوشه css -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- فراخوانی اسکریپت ساخت هدر و منوی بالا -->
+  <script src="nav.js"></script>
+
+  <style>
+    .page-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+      color: white;
+      padding: 50px 20px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 60%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .page-hero h1 {
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .page-hero p {
+      font-size: 0.98rem;
+      opacity: 0.9;
+      max-width: 650px;
+      margin: 0 auto;
+      line-height: 1.7;
+      position: relative;
+    }
+
+    .content-section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 16px 80px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #3b82f6;
+      font-weight: 600;
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+    }
+    .back-link:hover { color: #1e3a8a; }
+
+    .section-card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px 22px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border: 1px solid #e2e8f0;
+    }
+    .section-card h2 {
+      font-size: 1.22rem;
+      color: #1e3a8a;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-card h2::before {
+      content: '';
+      width: 4px;
+      height: 22px;
+      background: #3b82f6;
+      border-radius: 2px;
+    }
+    .section-card p {
+      color: #334155;
+      font-size: 0.95rem;
+      line-height: 1.85;
+      text-align: justify;
+      margin: 0 0 12px;
+    }
+
+    /* باکس تعهد اختصاصی امور مالی و کارت بانکی */
+    .banking-trust-box {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border: 2px solid #86efac;
+      border-radius: 18px;
+      padding: 24px 20px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .banking-trust-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #166534;
+      font-size: 1.15rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+    .banking-trust-box p {
+      color: #14532d;
+      font-size: 0.95rem;
+      line-height: 1.85;
+      margin-bottom: 0;
+      text-align: justify;
+    }
+
+    /* لیست اصول منشور */
+    .policy-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .policy-item {
+      display: flex;
+      gap: 14px;
+      padding: 16px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .policy-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .policy-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #eff6ff;
+      color: #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .policy-content h3 {
+      font-size: 1rem;
+      color: #0f172a;
+      margin: 0 0 6px;
+      font-weight: 700;
+    }
+    .policy-content p {
+      font-size: 0.9rem;
+      color: #475569;
+      line-height: 1.75;
+      margin: 0;
+      text-align: justify;
+    }
+
+    /* باکس اخطار امنیتی */
+    .security-notice {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 14px;
+      padding: 16px;
+      color: #92400e;
+      font-size: 0.9rem;
+      line-height: 1.75;
+      text-align: justify;
+    }
+    .security-notice strong {
+      color: #78350f;
+    }
+  </style>
+</head>
+<body>
+  <!-- هدر و منو به‌صورت خودکار توسط nav.js ساخته می‌شود -->
+
+  <!-- هیرو -->
+  <section class="page-hero">
+    <h1>خط‌مشی مشتریان و حریم خصوصی</h1>
+    <p>امنیت اطلاعات و امانت‌داری کامل داده‌های هویتی و بانکی شما، تعهد قانونی و اخلاقی سامانه هوشمند کافی‌نت من است.</p>
+  </section>
+
+  <div class="content-section">
+    <a href="index.html" class="back-link">← بازگشت به صفحه اصلی</a>
+
+    <!-- باکس ویژه تعهد امنیتی کارت‌های بانکی -->
+    <div class="banking-trust-box">
+      <div class="banking-trust-header">
+        <span>🛡️</span>
+        <span>تعهد رسمی حفاظت از اطلاعات کارت‌های بانکی و پرداخت</span>
+      </div>
+      <p>
+        مدیریت و پرسنل سامانه صریحاً و رسماً متعهد می‌شوند که تمامی اطلاعات کارت بانکی کاربران اعم از شماره کارت، اطلاعات پرداخت و کدهای ارسالی، <strong>تحت هیچ شرایطی در هیچ پایگاه داده یا سامانه‌ای ذخیره نشده، در اختیار هیچ شخص ثالثی قرار نخواهد گرفت</strong> و صرفاً و منحصراً جهت انجام همان تراکنش یا پرداخت هزینه ثبت‌نام مورد درخواست شما در درگاه‌های معتبر شاپرک مورد استفاده قرار می‌گیرد.
+      </p>
+    </div>
+
+    <!-- اصول حفظ حریم خصوصی -->
+    <div class="section-card">
+      <h2>حفظ حریم خصوصی و امنیت داده‌ها</h2>
+      <p>
+        ما حفظ اطلاعات شخصی و محرمانگی اسناد را خط قرمز خود می‌دانیم. ساختار امنیتی ما به گونه‌ای طراحی شده که اطلاعات هویتی و پرونده‌های الکترونیکی شما در بالاترین سطح ایمنی نگهداری شوند:
+      </p>
+
+      <div class="policy-list">
+        <div class="policy-item">
+          <div class="policy-icon">🔒</div>
+          <div class="policy-content">
+            <h3>امانت‌داری اسناد هویتی و مدارک</h3>
+            <p>تصاویر مدارک، شناسنامه‌ها، کارت‌های ملی و فرم‌های بارگذاری‌شده صرفاً در راستای انجام فرآیند ثبتی استفاده شده و پس از تکمیل نهایی و ارائه رسید، به‌صورت دوره‌ای از سرورهای موقت پاک‌سازی می‌شوند.</p>
+          </div>
+        </div>
+
+        <div class="policy-item">
+          <div class="policy-icon">👨‍💼</div>
+          <div class="policy-content">
+            <h3>پرسنل آموزش‌دیده و متعهد به حفظ اسرار</h3>
+            <p>تمام کارشناسانی که به سامانه‌های ثبت خدمات دسترسی دارند، دوره‌های جامع مشتری‌مداری، اصول حفظ محرمانگی داده‌ها و استانداردهای ثبتی را با موفقیت گذرانده و دارای تعهد کتبی کاری هستند.</p>
+          </div>
+        </div>
+
+        <div class="policy-item">
+          <div class="policy-icon">👁️</div>
+          <div class="policy-content">
+            <h3>نظارت مستقیم و دو مرحله‌ای مدیریت</h3>
+            <p>تمامی سفارش‌های ثبت‌شده پیش از ارسال و صدور نهایی توسط مدیریت مجموعه بازبینی می‌شوند تا علاوه بر حفظ کامل حریم داده، امکان بروز کوچک‌ترین خطای سیستمی یا انسانی به صفر برسد.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- منشور حقوق مشتریان -->
+    <div class="section-card">
+      <h2>منشور حقوق و شفافیت خدمات</h2>
+      
+      <div class="policy-list">
+        <div class="policy-item">
+          <div class="policy-icon">🧾</div>
+          <div class="policy-content">
+            <h3>شفافیت در هزینه‌ها و تعرفه‌ها</h3>
+            <p>تعرفه خدمات سامانه پیش از پرداخت به‌صورت کاملاً واضح درج می‌شود و هیچ‌گونه هزینه پنهان، کارمزد اضافی یا تغییر قیمت بدون هماهنگی قبلی رخ نخواهد داد.</p>
+          </div>
+        </div>
+
+        <div class="policy-item">
+          <div class="policy-icon">⏱️</div>
+          <div class="policy-content">
+            <h3>تعهد به زمان‌بندی و اولویت سفارش‌های فوری</h3>
+            <p>فرآیندهای زمان‌دار شامل مهلت‌های ثبت‌نام آزمون‌ها و سامانه‌های دولتی دارای اولویت ویژه هستند و در سریع‌ترین زمان کاری به همراه ارائه کد رهگیری پردازش می‌شوند.</p>
+          </div>
+        </div>
+
+        <div class="policy-item">
+          <div class="policy-icon">📋</div>
+          <div class="policy-content">
+            <h3>ارائه رسید معتبر و مستندات قانونی</h3>
+            <p>پس از انجام هر خدمت، رسید الکترونیکی معتبر، فایل‌های تاییدی سازمان مربوطه و کدهای پیگیری یکتا بلافاصله در اختیار متقاضی قرار خواهد گرفت.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- خط‌مشی کانال‌های ارتباطی -->
+    <div class="section-card">
+      <h2>خط‌مشی راه‌های ارتباطی و امنیت پیامک</h2>
+      <div class="security-notice">
+        <strong>توجه به راه‌های رسمی ارتباطی:</strong> سامانه هوشمند کافی‌نت من تنها از طریق شماره تلفن ثابت رسمی <strong>۰۲۱-۹۱۰۱۱۱۰۲</strong> و سرشماره اختصاصی پیامک <strong>۱۰۰۰۲۱۹۱۰۱۱۱۰۲</strong> با شما در ارتباط خواهد بود. ارسال هرگونه پیامک، لینک پرداخت یا درخواست کد با سرشماره‌های شخصی و غیررسمی خارج از حیطه این سامانه بوده و مورد تایید ما نمی‌باشد.
+      </div>
+    </div>
+
+    <!-- تعهد پایانی -->
+    <div class="section-card" style="background: linear-gradient(135deg, #eff6ff, #f0f9ff); border-color:#bfdbfe;">
+      <p style="margin:0; text-align:center; font-weight:700; color:#1e3a8a; font-size:0.95rem; line-height: 1.85;">
+        ما متعهدیم محیطی امن، قانون‌مدار و مورد اعتماد را برای کلیه امور اینترنتی و اداری شما فراهم سازیم.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
