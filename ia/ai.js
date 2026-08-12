@@ -1,10 +1,15 @@
+// ia/ai.js
+
 import { PROXY_URL, services, lockBodyScroll, openOrderModal } from '../index.js';
 
 let chatHistory = [];
 let SYSTEM_PROMPT = "";
 
 export function openAiChat() {
-  document.getElementById('aiModal').style.display = 'flex';
+  const modal = document.getElementById('aiModal');
+  if (!modal) return;
+  
+  modal.style.display = 'flex';
   lockBodyScroll();
   initSystemPrompt();
   setupEvents();
