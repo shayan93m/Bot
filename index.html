@@ -5,32 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>سامانه هوشمند کافی‌نت من</title>
  
+  <!-- مسیر استایل داخل پوشه css -->
   <link rel="stylesheet" href="css/style.css">
   <script src="nav.js"></script>
 </head>
 <body>
-  <!-- هدر و منو از nav.js لود می‌شود -->
 
-  <!-- محتوای اصلی -->
   <main>
     <h1 class="section-title" id="categoryTitle">لیست خدمات کافی‌نت</h1>
     <div class="categories-bar" id="categoriesBar"></div>
     <div class="services-grid" id="servicesGrid"></div>
   </main>
 
-  <!-- دکمه ربات هوش مصنوعی -->
+  <!-- مسیر آیکون داخل پوشه ia -->
   <div class="ai-bot-btn" id="aiBtn" title="گفتگو با هوش مصنوعی">
     <img src="ia/ai.svg" alt="هوش مصنوعی" style="width:32px; height:32px; object-fit:contain;">
   </div>
 
-  <!-- کادر جستجو -->
   <footer>
     <div class="search-container">
       <ul class="search-results-list" id="searchResults"></ul>
       <div class="search-box">
-        <input type="text" id="searchInput" 
-               placeholder="جستجوی تمامی خدمات یا کد خدمت..."
-               autocomplete="off">
+        <input type="text" id="searchInput" placeholder="جستجوی تمامی خدمات یا کد خدمت..." autocomplete="off">
       </div>
     </div>
   </footer>
@@ -44,7 +40,6 @@
       </div>
       <div class="modal-body">
         <p id="modalDesc" style="margin-bottom: 12px; line-height: 1.6; color: #334155;">توضیحات خدمت...</p>
-       
         <div class="info-badge" style="background-color: #fef3c7; color: #92400e;">
           <span>📋 مدارک مورد نیاز:</span>
           <span id="modalDocs" style="font-weight: bold;">...</span>
