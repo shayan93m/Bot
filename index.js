@@ -24,9 +24,16 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('خطا در بارگذاری خدمات:', error);
     });
 
-  // رویداد بستن تمام مدال‌ها
+  // رویداد بستن تمام مدال‌ها با دکمه بستن (✕)
   document.querySelectorAll('.close-btn-trigger').forEach(btn => {
     btn.addEventListener('click', closeAllModals);
+  });
+
+  // بستن مدال‌ها با کلیک روی فضای بیرون کادر (Overlay Click)
+  window.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal')) {
+      closeAllModals();
+    }
   });
 
   // جستجوی زنده
@@ -43,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     openOrderFromServiceBtn.addEventListener('click', () => openOrderModal());
   }
 
-  // لود پویای ماژول هوش مصنوعی از پوشه ia (Lazy Loading)
+  // لود پویای ماژول هوش مصنوعی از پوشه ia
   const aiBtn = document.getElementById('aiBtn');
   if (aiBtn) {
     aiBtn.addEventListener('click', async () => {
@@ -383,4 +390,5 @@ async function submitOrder(e) {
     submitBtn.innerText = 'ارسال سفارش';
     submitBtn.disabled = false;
   }
-}
+    }
+    
