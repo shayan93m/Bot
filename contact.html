@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ارتباط با ما | سامانه هوشمند کافی‌نت من</title>
+  
+  <!-- فراخوانی استایل اصلی از پوشه css -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- فراخوانی اسکریپت ساخت هدر و منوی بالا -->
+  <script src="nav.js"></script>
+
+  <style>
+    .page-hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      padding: 50px 20px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 60%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .page-hero h1 {
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .page-hero p {
+      font-size: 1rem;
+      opacity: 0.9;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.7;
+      position: relative;
+    }
+
+    .content-section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 16px 80px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #3b82f6;
+      font-weight: 600;
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+    }
+    .back-link:hover { color: #1e3a8a; }
+
+    .section-card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px 22px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border: 1px solid #e2e8f0;
+    }
+    .section-card h2 {
+      font-size: 1.25rem;
+      color: #1e3a8a;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-card h2::before {
+      content: '';
+      width: 4px;
+      height: 22px;
+      background: #3b82f6;
+      border-radius: 2px;
+    }
+
+    /* باکس‌های اطلاعات تماس */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 10px;
+    }
+    .contact-badge {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.25s ease;
+    }
+    .contact-badge:hover {
+      border-color: #bfdbfe;
+      box-shadow: 0 6px 18px rgba(59,130,246,0.08);
+      transform: translateY(-2px);
+    }
+    .badge-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: #eff6ff;
+      color: #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .badge-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .badge-info .title {
+      font-size: 0.78rem;
+      color: #64748b;
+      font-weight: 600;
+    }
+    .badge-info a, .badge-info span.value {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1e293b;
+      text-decoration: none;
+      direction: ltr;
+      text-align: right;
+    }
+    .badge-info a:hover { color: #2563eb; }
+
+    /* فرم ارسال پیام */
+    .form-row {
+      margin-bottom: 18px;
+    }
+    .form-row label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 8px;
+    }
+    .form-row input, 
+    .form-row textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #f8fafc;
+      font-size: 0.92rem;
+      color: #1e293b;
+      outline: none;
+      box-sizing: border-box;
+      transition: all 0.2s;
+    }
+    .form-row input:focus, 
+    .form-row textarea:focus {
+      background: #ffffff;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+    }
+    .form-row input[type="file"] {
+      background: #ffffff;
+      border: 1px dashed #cbd5e1;
+      cursor: pointer;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(37,99,235,0.25);
+    }
+    .btn-submit:hover {
+      opacity: 0.95;
+      box-shadow: 0 6px 18px rgba(37,99,235,0.35);
+    }
+  </style>
+</head>
+<body>
+  <!-- هدر و منو به‌صورت خودکار توسط nav.js ساخته می‌شود -->
+
+  <!-- هیرو -->
+  <section class="page-hero">
+    <h1>ارتباط با ما</h1>
+    <p>در صورت وجود هرگونه سؤال، پیشنهاد یا نیاز به پیگیری خدمات، می‌توانید از طریق راه‌های ارتباطی زیر یا فرم زیر با ما در ارتباط باشید.</p>
+  </section>
+
+  <div class="content-section">
+    <a href="index.html" class="back-link">← بازگشت به صفحه اصلی</a>
+
+    <!-- مشخصات تماس -->
+    <div class="section-card">
+      <h2>اطلاعات و راه‌های تماس</h2>
+      <div class="contact-grid">
+        <div class="contact-badge">
+          <div class="badge-icon">📞</div>
+          <div class="badge-info">
+            <span class="title">تلفن تماس</span>
+            <a href="tel:02191011102">۰۲۱-۹۱۰۱۱۱۰۲</a>
+          </div>
+        </div>
+
+        <div class="contact-badge">
+          <div class="badge-icon">✉️</div>
+          <div class="badge-info">
+            <span class="title">ایمیل سازمانی</span>
+            <a href="mailto:info@iranosc.ir">info@iranosc.ir</a>
+          </div>
+        </div>
+
+        <div class="contact-badge">
+          <div class="badge-icon">📮</div>
+          <div class="badge-info">
+            <span class="title">کد پستی</span>
+            <span class="value">۳۸۱۵۹۶۸۱۹۷</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- فرم ارسال پیام -->
+    <div class="section-card">
+      <h2>ارسال پیام مستقیم</h2>
+
+      <form id="contactForm" action="https://formsubmit.co/iranoscir@gmail.com" method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+        
+        <div class="form-row">
+          <label for="fullName">نام و نام خانوادگی:</label>
+          <input type="text" id="fullName" name="نام و نام خانوادگی" required placeholder="نام کامل خود را وارد کنید">
+        </div>
+
+        <div class="form-row">
+          <label for="phoneNumber">شماره تماس همراه:</label>
+          <input type="tel" id="phoneNumber" name="شماره تماس" required placeholder="مثال: ۰۹۱۲۳۴۵۶۷۸۹">
+        </div>
+
+        <div class="form-row">
+          <label for="subject">موضوع پیام:</label>
+          <input type="text" id="subject" name="موضوع" required placeholder="موضوع درخواست یا پیام">
+        </div>
+
+        <div class="form-row">
+          <label for="description">شرح پیام / توضیحات:</label>
+          <textarea id="description" name="توضیحات" rows="5" required placeholder="پیام خود را بنویسید..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label for="attachment">فایل پیوست (اختیاری):</label>
+          <input type="file" id="attachment" name="attachment">
+        </div>
+
+        <div class="form-row">
+          <label>کد امنیتی: <span id="captchaQuestion" style="color: #2563eb; font-weight: 800;"></span></label>
+          <input type="number" id="captchaAnswer" required placeholder="حاصل جمع را وارد کنید" inputmode="numeric">
+        </div>
+
+        <button type="submit" class="btn-submit" id="submitBtn">ارسال پیام</button>
+      </form>
+    </div>
+
+    <!-- باکس پایانی -->
+    <div class="section-card" style="background: linear-gradient(135deg, #eff6ff, #f0f9ff); border-color:#bfdbfe;">
+      <p style="margin:0; text-align:center; font-weight:600; color:#1e3a8a; font-size:0.95rem; line-height: 1.8;">
+        پیام‌های دریافتی در سریع‌ترین زمان ممکن بررسی شده و در صورت نیاز از طریق تماس یا پیامک پاسخ داده خواهند شد.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    let captchaResult = 0;
+
+    function initCaptcha() {
+      const num1 = Math.floor(Math.random() * 8) + 2;
+      const num2 = Math.floor(Math.random() * 8) + 2;
+      captchaResult = num1 + num2;
+      
+      const qEl = document.getElementById('captchaQuestion');
+      if (qEl) qEl.innerText = `${num1} + ${num2} = ؟`;
+      
+      const aEl = document.getElementById('captchaAnswer');
+      if (aEl) aEl.value = '';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initCaptcha();
+
+      const form = document.getElementById('contactForm');
+      if (form) {
+        form.addEventListener('submit', (e) => {
+          const userAnswer = parseInt(document.getElementById('captchaAnswer').value, 10);
+          
+          if (userAnswer !== captchaResult) {
+            e.preventDefault();
+            alert('کد امنیتی اشتباه است. لطفاً حاصل جمع را مجدداً وارد نمایید.');
+            initCaptcha();
+            return;
+          }
+
+          const btn = document.getElementById('submitBtn');
+          btn.innerText = 'در حال ارسال...';
+          btn.disabled = true;
+        });
+      }
+    });
+  </script>
+</body>
+</html>
