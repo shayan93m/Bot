@@ -464,6 +464,187 @@ footer {
   color: #4b5563;
 }
 
+/* --- مدال ثبت‌نام / ورود --- */
+.auth-modal-content { max-width: 400px; }
+
+.auth-sub {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  margin-bottom: 18px;
+  line-height: 1.8;
+}
+
+#registerForm .field { margin-bottom: 15px; }
+
+#registerForm .field label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 7px;
+}
+
+#registerForm .field .hint {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  margin-right: 4px;
+  font-weight: 400;
+}
+
+#registerForm .field input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  background: #f9fafb;
+  color: var(--text-color);
+  transition: border-color .15s ease, background .15s ease;
+  direction: rtl;
+  font-family: inherit;
+}
+
+#registerForm .field input:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+}
+
+#registerForm .field input.ltr-input {
+  direction: ltr;
+  text-align: center;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+#registerForm .field .err {
+  display: none;
+  color: #ef4444;
+  font-size: 0.72rem;
+  margin-top: 6px;
+  line-height: 1.6;
+}
+
+#registerForm .field.invalid input { border-color: #ef4444; }
+#registerForm .field.invalid .err { display: block; }
+
+.pass-wrap { position: relative; }
+.pass-wrap .toggle-eye {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 700;
+  user-select: none;
+}
+
+.pass-rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.pass-rules span {
+  font-size: 0.68rem;
+  padding: 4px 9px;
+  border-radius: 20px;
+  background: #f1f5f9;
+  color: #94a3b8;
+  transition: all .15s ease;
+}
+
+.pass-rules span.ok {
+  background: rgba(16,185,129,0.12);
+  color: var(--success-color);
+  font-weight: 700;
+}
+
+.captcha-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.captcha-box {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: #fff;
+  font-weight: 800;
+  font-size: 1rem;
+  padding: 13px 16px;
+  border-radius: 12px;
+  min-width: 96px;
+  text-align: center;
+  letter-spacing: 1px;
+  direction: ltr;
+}
+
+.captcha-refresh {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  background: #f9fafb;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #94a3b8;
+  transition: transform .2s ease;
+}
+
+.captcha-refresh:active { transform: rotate(180deg); }
+.captcha-row input { flex: 1; text-align: center; }
+
+#registerForm .btn-primary {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: #fff;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+  box-shadow: 0 8px 18px rgba(30,58,138,0.22);
+  font-family: inherit;
+  margin-top: 6px;
+}
+
+#registerForm .btn-primary:active { transform: scale(0.98); }
+#registerForm .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--text-color);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+  max-width: 90vw;
+  text-align: center;
+  z-index: 400;
+}
+
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.success { background: var(--success-color); }
+.toast.error { background: #ef4444; }
+
 .info-badge {
   display: flex;
   justify-content: space-between;
@@ -490,6 +671,18 @@ footer {
   border-radius: 8px;
   cursor: pointer;
   font-weight: 700;
+}
+
+.order-btn.disabled {
+  background-color: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.service-card.service-inactive {
+  opacity: 0.6;
+  position: relative;
 }
 
 .close-modal-btn {
@@ -610,6 +803,160 @@ footer {
   cursor: pointer;
   border: none;
   font-weight: bold;
+}
+
+/* --- مدال سامانه در دسترس نیست / خدمت غیرفعال --- */
+.inactive-modal-content {
+  align-items: center;
+  text-align: center;
+  padding: 28px 22px 24px;
+  gap: 4px;
+}
+
+.inactive-icon {
+  font-size: 2.6rem;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.inactive-title {
+  color: var(--primary-color);
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.inactive-text {
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+  line-height: 1.7;
+}
+
+.inactive-subtext {
+  color: #475569;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.social-link {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: transform 0.15s ease;
+}
+
+.social-link:active {
+  transform: scale(0.92);
+}
+
+.social-link svg {
+  width: 24px;
+  height: 24px;
+}
+
+.social-link.instagram {
+  background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+}
+
+.social-link.telegram {
+  background: #229ED9;
+}
+
+.social-link.rubika {
+  background: #f9423a;
+}
+
+.social-link.bale {
+  background: #2ea1f8;
+}
+
+.social-id {
+  color: #94a3b8;
+  font-size: 0.78rem;
+  margin-bottom: 18px;
+  direction: ltr;
+}
+
+.inactive-close-btn {
+  width: 100%;
+  background-color: var(--primary-color);
+}
+
+/* --- مدال ثبت موفق سفارش --- */
+.success-modal-content {
+  align-items: center;
+  text-align: center;
+  padding: 28px 22px 24px;
+  gap: 4px;
+}
+
+.success-icon {
+  font-size: 2.6rem;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.success-title {
+  color: var(--success-color);
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+.success-text {
+  color: #475569;
+  font-size: 0.88rem;
+  margin-bottom: 16px;
+  line-height: 1.8;
+}
+
+.warning-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  text-align: right;
+}
+
+.warning-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  line-height: 1.6;
+}
+
+.warning-text {
+  color: #b91c1c;
+  font-size: 0.78rem;
+  line-height: 1.9;
+}
+
+.warning-text b {
+  color: #991b1b;
+  font-weight: 800;
+}
+
+.success-close-btn {
+  width: 100%;
+  background-color: var(--success-color);
 }
 
 body.modal-open {
