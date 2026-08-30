@@ -56,6 +56,10 @@
           <span>زمان نهایی شدن توسط سازمان:</span>
           <span id="modalSystemTime" style="color: #0284c7;">مشخص‌نشده</span>
         </div>
+        <div class="info-badge">
+          <span>وضعیت خدمت:</span>
+          <span id="modalStatus" style="color: #10b981; font-weight: bold;">فعال</span>
+        </div>
         <div class="btn-group">
           <button class="order-btn" id="openOrderFromServiceBtn">ثبت سفارش</button>
           <button class="close-modal-btn close-btn-trigger">بستن</button>
@@ -104,6 +108,56 @@
         <input type="text" id="chatInput" placeholder="سوال خود را بنویسید...">
         <button class="chat-send-btn" id="aiSendBtn">ارسال</button>
       </div>
+    </div>
+  </div>
+
+  <!-- مدال خدمت غیرفعال / سامانه در دسترس نیست -->
+  <div class="modal" id="inactiveModal">
+    <div class="modal-content inactive-modal-content">
+      <div class="inactive-icon">⛔</div>
+      <h2 class="inactive-title">کاربر گرامی</h2>
+      <p class="inactive-text">اکنون سامانه مورد نظر در دسترس نمی‌باشد.</p>
+      <p class="inactive-subtext">جهت اطلاع از آخرین اخبار، ما را در شبکه‌های اجتماعی دنبال کنید:</p>
+
+      <div class="social-links">
+        <a href="https://instagram.com/iranoscir" target="_blank" rel="noopener" class="social-link instagram" title="اینستاگرام">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="20" height="20" rx="6" stroke="white" stroke-width="1.8"/><circle cx="12" cy="12" r="4.5" stroke="white" stroke-width="1.8"/><circle cx="17.3" cy="6.7" r="1.2" fill="white"/></svg>
+        </a>
+        <a href="https://t.me/iranoscir" target="_blank" rel="noopener" class="social-link telegram" title="تلگرام">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 4.5L2.8 11.4c-1.1.4-1.1 1 -.2 1.3l4.6 1.4 1.8 5.5c.2.6.4.8.9.8.4 0 .6-.2.8-.4l2.2-2.1 4.5 3.3c.8.5 1.4.2 1.6-.8L21.9 5.6c.3-1.2-.4-1.7-1.4-1.3z" fill="white"/></svg>
+        </a>
+        <a href="https://rubika.ir/iranoscir" target="_blank" rel="noopener" class="social-link rubika" title="روبیکا">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="white" stroke-width="1.8"/><path d="M9 8l6 4-6 4V8z" fill="white"/></svg>
+        </a>
+        <a href="https://ble.ir/iranoscir" target="_blank" rel="noopener" class="social-link bale" title="بله">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-4.5 3.5c-.6.5-1.5 0-1.5-.7V6a1 1 0 0 1 1-1z" fill="white"/></svg>
+        </a>
+      </div>
+      <div class="social-id">آیدی: iranoscir@</div>
+
+      <button class="close-modal-btn close-btn-trigger inactive-close-btn">متوجه شدم</button>
+    </div>
+  </div>
+
+  <!-- مدال ثبت موفق سفارش -->
+  <div class="modal" id="orderSuccessModal">
+    <div class="modal-content success-modal-content">
+      <div class="success-icon">✅</div>
+      <h2 class="success-title">سفارش شما با موفقیت ثبت شد</h2>
+      <p class="success-text">به‌زودی با شما تماس خواهیم گرفت.</p>
+
+      <div class="warning-box">
+        <span class="warning-icon">⚠️</span>
+        <span class="warning-text">
+          اخطار: تنها راه ارتباطی ما با شما شماره
+          <b dir="ltr">02191011102</b>
+          و سامانه پیامک
+          <b dir="ltr">10002191011102</b>
+          می‌باشد.
+        </span>
+      </div>
+
+      <button class="close-modal-btn close-btn-trigger success-close-btn">متوجه شدم</button>
     </div>
   </div>
 

@@ -1,12 +1,36 @@
 // index.js
 
-export const PROXY_URL = "https://bot.youcoweb.workers.dev";
+export const PROXY_URL = "https://bot-v2.youcoweb.workers.dev";
 export let services = [];
 export let currentSelectedServiceObj = null;
 
 let currentCategory = 'همه';
+let categoriesList = ['همه'];
 let savedScrollY = 0;
 let captchaResult = 0;
+
+// نمایش مدال «سامانه در دسترس نیست» به‌جای alert پیش‌فرض مرورگر
+function showInactiveNotice() {
+  closeAllModals();
+  const modal = document.getElementById('inactiveModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    lockBodyScroll();
+  } else {
+    alert('این خدمت اکنون غیرفعال است');
+  }
+}
+
+// بررسی وضعیت فعال/غیرفعال بودن یک خدمت
+// قانون: status = 1 یعنی غیرفعال. خالی/۰/نامشخص یعنی فعال.
+function isServiceActive(item) {
+  if (!item) return true;
+  const status = item.status;
+  if (status === undefined || status === null || status === '') return true; // پیش‌فرض: فعال
+  const s = String(status).trim().toLowerCase();
+  if (s === '1' || s === 'true' || s === 'غیرفعال' || s === 'inactive' || s === 'off') return false;
+  return true;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   // بارگذاری لیست خدمات از پوشه data
@@ -40,6 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('searchInput');
   if (searchInput) searchInput.addEventListener('keyup', liveSearch);
 
+  // ناوبری بین دسته‌بندی‌ها با کشیدن انگشت (سوایپ) روی صفحه
+  setupCategorySwipe();
+
   // فرم ثبت سفارش
   const orderForm = document.getElementById('orderForm');
   if (orderForm) orderForm.addEventListener('submit', submitOrder);
@@ -47,7 +74,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // دکمه ثبت سفارش داخل مدال جزئیات خدمت
   const openOrderFromServiceBtn = document.getElementById('openOrderFromServiceBtn');
   if (openOrderFromServiceBtn) {
-    openOrderFromServiceBtn.addEventListener('click', () => openOrderModal());
+    openOrderFromServiceBtn.addEventListener('click', () => {
+      if (!isServiceActive(currentSelectedServiceObj)) {
+        showInactiveNotice();
+        return;
+      }
+      openOrderModal();
+    });
   }
 
   // لود پویای ماژول هوش مصنوعی از پوشه ia
@@ -75,7 +108,7 @@ export function lockBodyScroll() {
 
 // بستن تمام مدال‌ها و بازگرداندن وضعیت اسکرول
 export function closeAllModals() {
-  ['serviceModal', 'orderModal', 'aiModal'].forEach(id => {
+  ['serviceModal', 'orderModal', 'aiModal', 'inactiveModal', 'orderSuccessModal'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -89,6 +122,7 @@ export function closeAllModals() {
 // رندر دسته‌بندی‌ها
 function renderCategories() {
   const categories = ['همه', ...new Set(services.map(s => s.cat))];
+  categoriesList = categories;
   const container = document.getElementById('categoriesBar');
   if (!container) return;
   container.innerHTML = categories.map(cat => `
@@ -104,6 +138,59 @@ function filterCategory(cat) {
   currentCategory = cat;
   renderCategories();
   renderServices();
+
+  // اسکرول نوار دسته‌بندی برای نمایش دسته فعال
+  const activeChip = document.querySelector('.category-chip.active');
+  if (activeChip) activeChip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+}
+
+// ناوبری بین دسته‌بندی‌ها با کشیدن انگشت روی صفحه (سوایپ راست/چپ)
+function setupCategorySwipe() {
+  const target = document.getElementById('servicesGrid');
+  if (!target) return;
+
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+
+  target.addEventListener('touchstart', (e) => {
+    if (document.body.classList.contains('modal-open')) return;
+    if (e.touches.length !== 1) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    tracking = true;
+  }, { passive: true });
+
+  target.addEventListener('touchend', (e) => {
+    if (!tracking) return;
+    tracking = false;
+    if (document.body.classList.contains('modal-open')) return;
+
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const deltaX = endX - startX;
+    const deltaY = endY - startY;
+
+    const SWIPE_THRESHOLD = 60;
+    // فقط وقتی سوایپ افقی باشد نه اسکرول عمودی
+    if (Math.abs(deltaX) < SWIPE_THRESHOLD || Math.abs(deltaX) < Math.abs(deltaY) * 1.5) return;
+
+    const currentIndex = categoriesList.indexOf(currentCategory);
+    if (currentIndex === -1) return;
+
+    let nextIndex;
+    if (deltaX < 0) {
+      // کشیدن به چپ => دسته قبلی
+      nextIndex = Math.max(currentIndex - 1, 0);
+    } else {
+      // کشیدن به راست => دسته بعدی
+      nextIndex = Math.min(currentIndex + 1, categoriesList.length - 1);
+    }
+
+    if (nextIndex !== currentIndex) {
+      filterCategory(categoriesList[nextIndex]);
+    }
+  }, { passive: true });
 }
 
 // رندر کارت‌های خدمات
@@ -113,9 +200,9 @@ function renderServices() {
   const filtered = currentCategory === 'همه'
     ? services
     : services.filter(s => s.cat === currentCategory);
-    
+
   grid.innerHTML = filtered.map(s => `
-    <div class="service-card" data-id="${s.id}">
+    <div class="service-card${isServiceActive(s) ? '' : ' service-inactive'}" data-id="${s.id}">
       <h3>${s.id}. ${s.title}</h3>
       <span class="category-tag">${s.cat || ''}</span>
     </div>
@@ -137,7 +224,21 @@ export function openServiceModal(serviceId) {
   document.getElementById('modalCost').innerText = item.cost || 'طبق تعرفه';
   document.getElementById('modalTime').innerText = item.time || 'سریع';
   document.getElementById('modalSystemTime').innerText = item.systemTime || item.system_time || 'مشخص‌نشده';
- 
+  
+  // تنظیم وضعیت خدمت
+  const active = isServiceActive(item);
+  const statusEl = document.getElementById('modalStatus');
+  if (statusEl) {
+    statusEl.innerText = active ? 'فعال' : 'غیرفعال';
+    statusEl.style.color = active ? '#10b981' : '#ef4444';
+  }
+
+  // فعال/غیرفعال کردن ظاهری دکمه ثبت سفارش بر اساس وضعیت خدمت
+  const orderBtn = document.getElementById('openOrderFromServiceBtn');
+  if (orderBtn) {
+    orderBtn.classList.toggle('disabled', !active);
+  }
+
   document.getElementById('serviceModal').style.display = 'flex';
   lockBodyScroll();
 }
@@ -148,6 +249,13 @@ export function openOrderModal(serviceIdentifier) {
     const found = services.find(s => `${s.id}. ${s.title}` === serviceIdentifier || s.id == serviceIdentifier || s.title == serviceIdentifier);
     if (found) currentSelectedServiceObj = found;
   }
+
+  // محافظت نهایی: اگر خدمت غیرفعال باشد، مدال ثبت سفارش هرگز باز نشود
+  if (!isServiceActive(currentSelectedServiceObj)) {
+    showInactiveNotice();
+    return;
+  }
+
   closeAllModals();
   const titleText = currentSelectedServiceObj
     ? `${currentSelectedServiceObj.id}. ${currentSelectedServiceObj.title}`
@@ -307,7 +415,7 @@ function selectSearchResult(serviceId) {
   openServiceModal(serviceId);
 }
 
-// ارسال سفارش به ورکر
+// ارسال سفارش به ورکر پروکسی
 async function submitOrder(e) {
   e.preventDefault();
 
@@ -342,45 +450,60 @@ async function submitOrder(e) {
 👤 *نام مشتری:* ${name}${collectedDocsData}
 📝 *توضیحات تکمیلی:* ${notes}
 🌐 *منبع سفارش:* وب‌سایت
+📅 *تاریخ ثبت:* ${new Date().toLocaleDateString('fa-IR')}
 ⏱ *زمان ثبت:* ${new Date().toLocaleTimeString('fa-IR')}`;
 
   try {
+    // ۱. ارسال اطلاعات متنی به Worker
     const textRes = await fetch(PROXY_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: messageText })
+      body: JSON.stringify({ type: 'text', text: messageText })
     });
 
-    if (!textRes.ok) throw new Error('خطا در ارسال پیام متنی');
+    if (!textRes.ok) throw new Error('خطا در ارسال اطلاعات سفارش');
 
+    // ۲. ارسال فایل‌های پویای مدارک به Worker
     const dynamicFiles = document.querySelectorAll('.dynamic-file-input');
     for (const input of dynamicFiles) {
       if (input.files && input.files.length > 0) {
         const file = input.files[0];
         const label = input.dataset.label || 'فایل';
         const formData = new FormData();
+        formData.append('type', 'file');
         formData.append('document', file, file.name);
         formData.append('caption', `📎 ${label} | ${serviceTitle} — ${name}`);
+        
         await fetch(PROXY_URL, { method: 'POST', body: formData });
       }
     }
 
+    // ۳. ارسال فایل‌های پیوست عمومی به Worker
     const fileInput = document.getElementById('orderFiles');
     if (fileInput && fileInput.files && fileInput.files.length > 0) {
       for (let i = 0; i < fileInput.files.length; i++) {
         const file = fileInput.files[i];
         const formData = new FormData();
+        formData.append('type', 'file');
         formData.append('document', file, file.name);
         formData.append('caption', `📎 پیوست سفارش: ${serviceTitle} — ${name} (${i + 1}/${fileInput.files.length})`);
+        
         await fetch(PROXY_URL, { method: 'POST', body: formData });
       }
     }
 
-    alert('✅ سفارش شما با موفقیت ثبت شد. به‌زودی با شما تماس می‌گیریم.');
     document.getElementById('custName').value = '';
     document.getElementById('custNotes').value = '';
     if (fileInput) fileInput.value = '';
     closeAllModals();
+
+    const successModal = document.getElementById('orderSuccessModal');
+    if (successModal) {
+      successModal.style.display = 'flex';
+      lockBodyScroll();
+    } else {
+      alert('✅ سفارش شما با موفقیت ثبت شد. به‌زودی با شما تماس می‌گیریم.');
+    }
 
   } catch (err) {
     console.error('Submit Error:', err);
@@ -390,5 +513,4 @@ async function submitOrder(e) {
     submitBtn.innerText = 'ارسال سفارش';
     submitBtn.disabled = false;
   }
-    }
-    
+}
