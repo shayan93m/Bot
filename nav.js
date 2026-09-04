@@ -11,7 +11,7 @@
       </svg>
     </button>
     <div class="logo-container">
-      <a href="index.html" class="logo" style="text-decoration:none; color:inherit;">سامانه هوشمند کافی‌نت من</a>
+      <a href="index.html" class="logo" style="text-decoration:none; color:inherit;">سامانه هوشمند کافی نت من</a>
     </div>
     <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
   </header>
@@ -36,7 +36,7 @@
   </nav>
   `;
 
-  // مدال ثبت‌نام / ورود (نسخه بازطراحی‌شده)
+  // مدال ثبت‌نام / ورود
   const authModalHTML = `
   <div class="modal" id="authModal">
     <div class="modal-content auth-modal-content">
@@ -44,7 +44,7 @@
         <h2 id="authModalTitle">ورود</h2>
         <span style="cursor:pointer;" class="close-btn-trigger" id="authCloseBtn">✕</span>
       </div>
-      <div class="modal-body" id="modalBody">
+      <div class="modal-body">
 
         <!-- فرم ورود -->
         <div id="loginFormWrap">
@@ -82,7 +82,7 @@
 
           <div class="auth-switch-row">
             <a href="#" id="forgotPassLink">فراموشی رمز عبور</a>
-            <a href="#" id="goToRegisterLink">ثبت‌نام</a>
+            <a href="#" id="goToRegisterLink">حساب ندارید؟ ثبت‌نام کنید</a>
           </div>
         </div>
 
@@ -555,6 +555,9 @@ function initAuth() {
         return;
       }
 
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'در حال ثبت...';
+
       const payload = {
         fullName: authFullNameInput.value.trim(),
         phone: authPhoneInput.value.trim(),
@@ -567,7 +570,7 @@ function initAuth() {
 
       setTimeout(() => {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'ث ثبت‌نام و ورود';
+        submitBtn.textContent = 'ثبت‌نام و ورود';
 
         // ذخیره اطلاعات ثبت‌نام برای ورودهای بعدی (باقی می‌ماند حتی بعد از خروج)
         // TODO: هرگز رمز را متن‌ساده ذخیره نکنید؛ باید در بک‌اند هش شود
