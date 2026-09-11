@@ -11,7 +11,7 @@
       </svg>
     </button>
     <div class="logo-container">
-      <a href="/" class="logo" style="text-decoration:none; color:inherit;">سامانه هوشمند کافی نت شایان 
+      <a href="/Bot" class="logo" style="text-decoration:none; color:inherit;">سامانه هوشمند کافی نت شایان 
 </a>
     </div>
     <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
